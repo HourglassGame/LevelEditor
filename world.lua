@@ -111,9 +111,6 @@ function api.KeyPressed(key, scancode, isRepeat)
 	if api.GetGameOver() then
 		return -- No doing actions
 	end
-	if GameHandler.KeyPressed(key, scancode, isRepeat) then
-		return
-	end
 end
 
 function api.MousePressed(x, y, button)

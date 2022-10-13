@@ -1,6 +1,6 @@
 
 local globals = {
-	BACK_COL = {130/255, 162/255, 58/255},
+	BACK_COL = {160/255, 160/255, 160/255},
 	PANEL_COL = {0.53, 0.53, 0.55},
 	
 	MASTER_VOLUME = 0.75,

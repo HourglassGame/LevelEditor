@@ -1,11 +1,13 @@
 
 return {
-	fontSize = 1,
+	fontSize = 0,
 	interface = false,
 	alphaScale = true,
 	duration = 3.5,
 	alphaBuffer = 0.35,
-	textWidth = 300,
+	textWidth = 800,
 	textHeight = 10,
-	inFront = 100,
+	color = {1, 0.2, 0.2},
+	inFront = 1200,
+	center = "left",
 }

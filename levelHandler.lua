@@ -8,6 +8,24 @@ local MapDefs = util.LoadDefDirectory("defs/maps")
 local self = {}
 local api = {}
 
+local function SafeLoadString(str)
+	if not str then
+		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Level file not found.", velocity = {0, 4}})
+		return false
+	end
+	local strFunc = loadstring(str)
+	if not strFunc then
+		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Error loading level.", velocity = {0, 4}})
+		return false
+	end
+	local success, strData = pcall(strFunc)
+	if not success then
+		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Level format error.", velocity = {0, 4}})
+		return false
+	end
+	return strData
+end
+
 function api.Width()
 	return self.width
 end
@@ -52,56 +70,68 @@ function api.GetMapData()
 	return self.map
 end
 
-function api.LoadLevel(name)
-	print("load level")
-	local contents = love.filesystem.read("levels/" .. name)
-	if not contents then
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Level file not found.", velocity = {0, 4}})
+function api.LoadLevel(dir, name)
+	print("Load level main.lua")
+	local levelStr = "return function()\n"
+	for line in io.lines(dir .. name .. ".lvl/main.lua") do
+		local first = string.sub(line, 0, 1)
+		if first ~= "{" and first ~= "}" and first ~= [[	]] and first ~= " " then
+			line = "local " .. line
+		end
+		levelStr = levelStr .. line .. "\n"
+	end
+	levelStr = levelStr .. [[return {
+		name = name,
+		speedOfTime = speedOfTime,
+		speedOfTimeFuture = speedOfTimeFuture,
+		timelineLength = timelineLength,
+		environment = environment,
+		initialGuy = initialGuy,
+		initialArrivals = initialArrivals,
+		triggerSystem = triggerSystem
+	}
+end
+]]
+	local levelData = SafeLoadString(levelStr)
+	if not levelData then
 		return
 	end
-	local levelFunc = loadstring("return "..contents)
-	if not levelFunc then
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Error loading level.", velocity = {0, 4}})
-		return
-	end
-	local success, levelData = pcall(levelFunc)
-	if not success then
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Level format error.", velocity = {0, 4}})
-		return
+	levelData = levelData()
+	
+	print("Load level triggerSystem.lua")
+	local trigStr = "return "
+	local writeActive = false
+	for line in io.lines(dir .. name .. ".lvl/triggerSystem.lua") do
+		if string.find(line, "local tempStore =") then
+			writeActive = true
+		elseif writeActive then
+			local first = string.sub(line, 0, 1)
+			if first == "}" then
+				trigStr = trigStr .. line .. "\n"
+				writeActive = false
+				break
+			elseif string.find(line, "bts.") then
+				local pos = string.find(line, "bts.")
+				local btsType = string.sub(line, pos + 4, string.len(line) - 1)
+				trigStr = trigStr .. "{\n"
+				trigStr = trigStr .. "btsType = \"" .. btsType .. "\",\n"
+			else
+				trigStr = trigStr .. line .. "\n"
+			end
+		end
 	end
 	
-	self.world.LoadLevelByTable(levelData)
+	levelData.trig = SafeLoadString(trigStr)
+	if not levelData.trig then
+		return
+	end
+	util.PrintTable(levelData.trig)
+	--self.world.LoadLevelByTable(levelData)
 	return true
 end
 
 function api.SaveLevel(name)
-	love.filesystem.createDirectory("levels")
-	self.humanName = name
 	
-	local save = {
-		humanName = self.humanName,
-		dimensions = {
-			width = self.width,
-			height = self.height,
-			tileSize = self.tileSize,
-			vertOffset = self.vertOffset,
-		},
-		baseCarriages = self.baseCarriages,
-		track = TerrainHandler.ExportObjects(),
-		doodads = DoodadHandler.ExportObjects(),
-		townDrawParams = {
-			font = (self.tileSize > 125 and 0) or 1,
-			pos = (self.tileSize > 145 and {-0.01, -1.55}) and (self.tileSize > 125 and {0.01, -1.58}) or {0.03, -1.55},
-		}
-	}
-	
-	local saveTable = util.TableToString(save)
-	local success, message = love.filesystem.write("levels/" .. name, saveTable)
-	if success then
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Level saved to " .. name .. ".", velocity = {0, 4}})
-	else
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Save error: " .. (message or "NO MESSAGE"), velocity = {0, 4}})
-	end
 	return success
 end
 
@@ -120,11 +150,12 @@ function api.MousePressed()
 end
 
 function api.TownWantPopup(pos)
-	self.townWantPos = pos
-	self.townWantConf = {{good = "food", count = 5}}
+
 end
 
 function api.KeyPressed(key, scancode, isRepeat)
+	self.enteredText = self.enteredText or "1EasyStart"
+	
 	if self.loadingLevelGetName or self.saveLevelGetName then
 		if key and string.len(key) == 1 then
 			if (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
@@ -144,7 +175,7 @@ function api.KeyPressed(key, scancode, isRepeat)
 		end
 		if key == "return" and self.enteredText then
 			if self.loadingLevelGetName then
-				api.LoadLevel(self.enteredText)
+				api.LoadLevel(self.dir, self.enteredText)
 				-- Loading causes immediate reinitialisation from world.
 			elseif self.saveLevelGetName then
 				if api.SaveLevel(self.enteredText) then
@@ -308,6 +339,8 @@ function api.Initialize(world, levelIndex, mapDataOverride)
 	self = {
 		world = world,
 	}
+	
+	self.dir = "F:/DevStuff/HG/HourglassII/data/levels/"
 	
 	SetupWorld(levelIndex, mapDataOverride)
 end

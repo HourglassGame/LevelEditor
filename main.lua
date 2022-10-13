@@ -84,7 +84,7 @@ function love.load(arg)
 	local major, minor, revision, codename = love.getVersion()
 	print(string.format("Version %d.%d.%d - %s", major, minor, revision, codename))
 
-	love.window.setTitle("Regular Railway")
+	love.window.setTitle("Hourglass Editor")
 	--love.graphics.setDefaultFilter("nearest", "nearest") -- Removing this helps some things and really hurts others
 
 	love.graphics.setBackgroundColor(Global.BACK_COL[1], Global.BACK_COL[2], Global.BACK_COL[3], 1)
@@ -94,6 +94,5 @@ function love.load(arg)
 	Resources.LoadResources()
 	World.Initialize()
 	
-	love.filesystem.setIdentity("RegularRailway", true)
-	love.window.maximize() -- Do not fullscreen since we lack an exit button.
+	--love.window.maximize() -- Do not fullscreen since we lack an exit button.
 end
