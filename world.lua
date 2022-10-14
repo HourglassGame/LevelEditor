@@ -66,7 +66,7 @@ function api.TakeScreenshot()
 end
 
 function api.SetGameOver(hasWon, overType)
-	if self.gameWon or self.gameLost or LevelHandler.InEditMode() then
+	if self.gameWon or self.gameLost then
 		return
 	end
 	
@@ -201,8 +201,8 @@ end
 local function UpdateCamera()
 	local cameraX, cameraY, cameraScale = Camera.UpdateCameraToViewPoints(dt, 
 		{
-			{pos = {0, 0}, radius = 30 + (LevelHandler.InEditMode() and 180 or 0)},
-			{pos = {Global.VIEW_WIDTH, Global.VIEW_HEIGHT}, radius = 30 + (LevelHandler.InEditMode() and 180 or 0)}
+			{pos = {0, 0}, radius = 210},
+			{pos = {Global.VIEW_WIDTH, Global.VIEW_HEIGHT}, radius = 210}
 		}, 0, 0)
 	Camera.UpdateTransform(self.cameraTransform, cameraX, cameraY, cameraScale)
 end
@@ -246,6 +246,7 @@ function api.Draw()
 	end
 	
 	EffectsHandler.Draw(drawQueue)
+	LevelHandler.Draw(drawQueue)
 	
 	if not Global.DEBUG_NO_SHADOW and not (Global.DEBUG_SPACE_ZOOM_OUT and love.keyboard.isDown("space")) then
 		--ShadowHandler.DrawGroundShadow(self.cameraTransform)

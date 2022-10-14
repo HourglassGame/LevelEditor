@@ -8,12 +8,38 @@ local MapDefs = util.LoadDefDirectory("defs/maps")
 local self = {}
 local api = {}
 
+local function CalculateDrawScale()
+	local widthFactor = Global.VIEW_WIDTH / (self.level.width * self.level.segmentSize)
+	local heightFactor = Global.VIEW_HEIGHT / (self.level.height * self.level.segmentSize)
+	self.drawScale = math.min(widthFactor, heightFactor)
+end
+
+local function SetupWorld(levelData)
+	self.level = {}
+	
+	local dataWall = levelData.environment.wall
+	local grid = {}
+	for i = 1, #dataWall do
+		for j = 1, #dataWall[i] do
+			grid[j - 1] = grid[j - 1] or {}
+			grid[j - 1][i - 1] = dataWall[i][j]
+		end
+	end
+	self.level.wall = grid
+	self.level.width = dataWall.width
+	self.level.height = dataWall.height
+	self.level.segmentSize = dataWall.segmentSize
+	CalculateDrawScale()
+	
+end
+
 local function SafeLoadString(str)
 	if not str then
 		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Level file not found.", velocity = {0, 4}})
 		return false
 	end
 	local strFunc = loadstring(str)
+	print(str)
 	if not strFunc then
 		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Error loading level.", velocity = {0, 4}})
 		return false
@@ -75,7 +101,7 @@ function api.LoadLevel(dir, name)
 	local levelStr = "return function()\n"
 	for line in io.lines(dir .. name .. ".lvl/main.lua") do
 		local first = string.sub(line, 0, 1)
-		if first ~= "{" and first ~= "}" and first ~= [[	]] and first ~= " " then
+		if first ~= "{" and first ~= "}" and first ~= [[	]] and first ~= " " and string.len(first) > 0 then
 			line = "local " .. line
 		end
 		levelStr = levelStr .. line .. "\n"
@@ -126,7 +152,8 @@ end
 		return
 	end
 	util.PrintTable(levelData.trig)
-	--self.world.LoadLevelByTable(levelData)
+	
+	SetupWorld(levelData)
 	return true
 end
 
@@ -135,8 +162,22 @@ function api.SaveLevel(name)
 	return success
 end
 
-function api.InEditMode()
-	return self.editMode
+function api.WorldToGrid(pos)
+	return self.level and {math.floor(pos[1] / self.level.segmentSize), math.floor(pos[2] / self.level.segmentSize)}
+end
+
+function api.WallAtGrid(pos)
+	if not (self.level and pos) then
+		return true
+	end
+	if not self.level.wall[pos[1]] then
+		return true
+	end
+	return self.level.wall[pos[1]][pos[2]] ~= 0
+end
+
+function api.WallAt(pos)
+	return api.WallAtGrid(api.WorldToGrid(pos))
 end
 
 function api.IsMenuOpen()
@@ -175,8 +216,9 @@ function api.KeyPressed(key, scancode, isRepeat)
 		end
 		if key == "return" and self.enteredText then
 			if self.loadingLevelGetName then
-				api.LoadLevel(self.dir, self.enteredText)
-				-- Loading causes immediate reinitialisation from world.
+				if api.LoadLevel(self.dir, self.enteredText) then
+					self.loadingLevelGetName = false
+				end
 			elseif self.saveLevelGetName then
 				if api.SaveLevel(self.enteredText) then
 					self.saveLevelGetName = false
@@ -187,30 +229,7 @@ function api.KeyPressed(key, scancode, isRepeat)
 	end
 	
 	if self.townWantConf then
-		local varyRate = ((love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) and 5) or 1
-		if key == "q" then
-			self.townWantConf[#self.townWantConf].good = "food"
-		elseif key == "w" then
-			self.townWantConf[#self.townWantConf].good = "wood"
-		elseif key == "e" then
-			self.townWantConf[#self.townWantConf].good = "ore"
-		elseif key == "a" then
-			self.townWantConf[#self.townWantConf + 1] = {good = "food", count = 5}
-		elseif key == "d" then
-			if #self.townWantConf > 1 then
-				self.townWantConf[#self.townWantConf] = nil
-			end
-		elseif key == "n" then
-			self.townWantConf[#self.townWantConf].count = math.max(1, self.townWantConf[#self.townWantConf].count - varyRate)
-		elseif key == "m" then
-			self.townWantConf[#self.townWantConf].count = self.townWantConf[#self.townWantConf].count + varyRate
-		elseif key == "return" or key == "escape" then
-			local track = TerrainHandler.GetTrackAtPos(self.townWantPos)
-			if track then
-				track.progression = self.townWantConf
-			end
-			self.townWantConf = false
-		end
+		
 		return true
 	end
 	
@@ -251,23 +270,27 @@ function api.KeyPressed(key, scancode, isRepeat)
 	elseif key == "n" then
 		self.height = self.height + varyRate
 		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Height: " .. self.height, velocity = {0, 4}})
-	elseif key == "l" then
-		self.vertOffset = self.vertOffset - varyRate
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Offset: " .. self.vertOffset, velocity = {0, 4}})
-	elseif key == "." then
-		self.vertOffset = self.vertOffset + varyRate
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Offset: " .. self.vertOffset, velocity = {0, 4}})
-	elseif key == "m" then
-		self.baseCarriages = math.max(1, self.baseCarriages - varyRate)
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Initial carriages: " .. self.baseCarriages, velocity = {0, 4}})
-	elseif key == "," then
-		self.baseCarriages = self.baseCarriages + varyRate
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Initial carriages: " .. self.baseCarriages, velocity = {0, 4}})
 	end
 end
 
-local function SetupWorld(levelIndex, mapDataOverride)
-
+function api.Draw(drawQueue)
+	if not self.level then
+		return
+	end
+	drawQueue:push({y=-100; f=function()
+		local scale = self.drawScale * self.level.segmentSize
+		for x = 0, self.level.width - 1 do
+			for y = 0, self.level.height- 1 do
+				love.graphics.setLineWidth(5)
+				if api.WallAtGrid({x, y}) then
+					love.graphics.setColor(0.4, 0.4, 0.4, 0.3)
+					love.graphics.rectangle("fill", x*scale, y*scale, scale, scale, 4, 4, 8)
+				end
+				love.graphics.setColor(0.2, 0.2, 0.2, 0.3)
+				love.graphics.rectangle("line", x*scale, y*scale, scale, scale, 4, 4, 8)
+			end
+		end
+	end})
 end
 
 function api.DrawInterface()
@@ -290,26 +313,7 @@ function api.DrawInterface()
 	end
 	
 	if self.townWantConf then
-		Font.SetSize(2)
-		love.graphics.setColor(0, 0, 0, 0.8)
-		love.graphics.printf("Configure Town", overX, overY + overHeight * 0.04, overWidth, "center")
-	
-		Font.SetSize(3)
-		love.graphics.printf([[
-- QWE: Set resource
-- N/M: Tweak count
-- A: Add line
-- D: Delete line
-- Enter: Done
-Hold shift for +5/-5
-]], overX + overWidth*0.5, overY + overHeight * 0.2, overWidth*0.8, "left")
-		local needStr = "Town needs:"
-		util.PrintTable(self.townWantConf)
-		for i = 1, #self.townWantConf do
-			local line = self.townWantConf[i]
-			needStr = needStr .. "\n" .. line.good .. ": " .. line.count
-		end
-		love.graphics.printf(needStr, overX + overWidth*0.15, overY + overHeight * 0.2, overWidth*0.4, "left")
+		
 	elseif self.loadingLevelGetName then
 		Font.SetSize(0)
 		love.graphics.setColor(0, 0, 0, 0.8)
@@ -341,8 +345,6 @@ function api.Initialize(world, levelIndex, mapDataOverride)
 	}
 	
 	self.dir = "F:/DevStuff/HG/HourglassII/data/levels/"
-	
-	SetupWorld(levelIndex, mapDataOverride)
 end
 
 return api

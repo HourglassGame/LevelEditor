@@ -52,9 +52,6 @@ function love.update(dt)
 	frames = frames + 1
 	if dt > 0.05 then
 		longFrames = longFrames + 1
-		if not Global.DEBUG_PRINT_CLICK_POS and not LevelHandler.InEditMode() then
-			print(math.floor(frames *100 / longFrames), dt)
-		end
 	end
 	if dt > MAX_DT then
 		missingDt = (dt - MAX_DT)
