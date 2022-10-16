@@ -114,7 +114,7 @@ function api.LoadLevel(dir, name)
 		environment = environment,
 		initialGuy = initialGuy,
 		initialArrivals = initialArrivals,
-		triggerSystem = triggerSystem
+		triggerSystem = triggerSystem,
 	}
 end
 ]]
@@ -243,33 +243,28 @@ function api.KeyPressed(key, scancode, isRepeat)
 		self.editMode = not self.editMode
 	end
 	
-	if not self.editMode then
+	local level = self.level
+	if not level then
 		return
 	end
 	
 	local varyRate = ((love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) and 5) or 1
 	if key == "z" then
-		self.tileSize = math.max(2, self.tileSize - varyRate)
-		TerrainHandler.UpdateTileSize()
-		DoodadHandler.UpdateTileSize()
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Tile size: " .. self.tileSize, velocity = {0, 4}})
+		level.width = math.max(1, level.width - varyRate)
+		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Width: " .. level.width, velocity = {0, 4}})
+		CalculateDrawScale()
 	elseif key == "x" then
-		self.tileSize = self.tileSize + varyRate
-		TerrainHandler.UpdateTileSize()
-		DoodadHandler.UpdateTileSize()
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Tile size: " .. self.tileSize, velocity = {0, 4}})
+		level.width = level.width + varyRate
+		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Width: " .. level.width, velocity = {0, 4}})
+		CalculateDrawScale()
 	elseif key == "c" then
-		self.width = math.max(1, self.width - varyRate)
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Width: " .. self.width, velocity = {0, 4}})
+		level.height = math.max(1, level.height - varyRate)
+		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Height: " .. level.height, velocity = {0, 4}})
+		CalculateDrawScale()
 	elseif key == "v" then
-		self.width = self.width + varyRate
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Width: " .. self.width, velocity = {0, 4}})
-	elseif key == "b" then
-		self.height = math.max(1, self.height - varyRate)
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Height: " .. self.height, velocity = {0, 4}})
-	elseif key == "n" then
-		self.height = self.height + varyRate
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Height: " .. self.height, velocity = {0, 4}})
+		level.height = level.height + varyRate
+		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Height: " .. level.height, velocity = {0, 4}})
+		CalculateDrawScale()
 	end
 end
 

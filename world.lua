@@ -1,21 +1,12 @@
 
-local ModuleTest = require("moduleTest")
 SoundHandler = require("soundHandler")
 MusicHandler = require("musicHandler")
 EffectsHandler = require("effectsHandler")
-ComponentHandler = require("componentHandler")
-DialogueHandler = require("dialogueHandler")
 LevelHandler = require("levelHandler")
 
 Camera = require("utilities/cameraUtilities")
 InterfaceUtil = require("utilities/interfaceUtilities")
 Delay = require("utilities/delay")
-
-local ShadowHandler = require("shadowHandler")
-local PhysicsHandler = require("physicsHandler")
-ChatHandler = require("chatHandler")
-DeckHandler = require("deckHandler")
-GameHandler = require("gameHandler") -- Handles the gamified parts of the game, such as score, progress and interface.
 
 local PriorityQueue = require("include/PriorityQueue")
 
@@ -122,14 +113,8 @@ function api.MousePressed(x, y, button)
 	if LevelHandler.MousePressed(x, y, button) then
 		return
 	end
-	if GameHandler.MousePressed(x, y, button) then
-		return
-	end
 	if api.GetGameOver() then
 		return -- No doing actions
-	end
-	if DialogueHandler.MousePressedInterface(uiX, uiY, button) then
-		return
 	end
 	x, y = self.cameraTransform:inverse():transformPoint(x, y)
 	
@@ -210,7 +195,6 @@ end
 function api.Update(dt, realDt)
 	MusicHandler.Update(realDt)
 	SoundHandler.Update(realDt)
-	GameHandler.Update(dt)
 	if api.GetPaused() then
 		UpdateCamera()
 		return
@@ -219,13 +203,7 @@ function api.Update(dt, realDt)
 	self.lifetime = self.lifetime + dt
 	Delay.Update(dt)
 	InterfaceUtil.Update(dt)
-	ComponentHandler.Update(dt)
-	--ModuleTest.Update(dt)
 	
-	--PhysicsHandler.Update(math.min(0.04, dt))
-	--ShadowHandler.Update(dt)
-
-	ChatHandler.Update(dt)
 	EffectsHandler.Update(dt)
 	UpdateCamera()
 end
@@ -271,10 +249,7 @@ function api.Draw()
 	
 	-- Draw interface
 	LevelHandler.DrawInterface()
-	GameHandler.DrawInterface()
 	EffectsHandler.DrawInterface()
-	DialogueHandler.DrawInterface()
-	ChatHandler.DrawInterface()
 	
 	love.graphics.replaceTransform(self.emptyTransform)
 end
@@ -296,21 +271,11 @@ function api.Initialize(levelIndex, levelTableOverride, musicEnabled)
 	
 	Delay.Initialise()
 	InterfaceUtil.Initialize()
-	--ShadowHandler.Initialize(api)
 	EffectsHandler.Initialize(api)
 	SoundHandler.Initialize()
 	MusicHandler.Initialize(api)
 	
-	ChatHandler.Initialize(api)
-	DialogueHandler.Initialize(api)
-	--PhysicsHandler.Initialize(api)
-	
 	LevelHandler.Initialize(api, self.levelIndex, self.levelTableOverride)
-	
-	ComponentHandler.Initialize(api)
-	DeckHandler.Initialize(api)
-	GameHandler.Initialize(api)
-	--ModuleTest.Initialize(api)
 	
 	-- Note that the camera pins only function for these particular second entries.
 	Camera.Initialize({
