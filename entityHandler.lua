@@ -13,6 +13,15 @@ function api.AddEntity(name, data)
 	IterableMap.Add(self.entities, NewEntity(data, def))
 end
 
+function api.HitTest(pos)
+	local hit = false
+	local function RegisterHit(entity)
+		hit = entity
+	end
+	IterableMap.ApplySelf(self.entities, "HitTest", pos, RegisterHit)
+	return hit
+end
+
 function api.Update(dt)
 	--IterableMap.ApplySelf(self.entities, "Update", dt)
 end

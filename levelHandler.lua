@@ -35,12 +35,18 @@ function api.WorldToHg(var)
 end
 
 local function InitialiseNewLevel()
-
+	self.level = {}
+	self.level.wall = {}
+	self.level.width = 3
+	self.level.height = 3
+	self.level.segmentSize = 3200
+	CalculateDrawScale()
 end
 
 local function SetupWorld(levelData)
 	if not levelData then
 		InitialiseNewLevel()
+		return
 	end
 	self.level = {}
 	
@@ -380,6 +386,7 @@ function api.Initialize(world, levelIndex, mapDataOverride)
 	}
 	
 	self.dir = "F:/DevStuff/HG/HourglassII/data/levels/"
+	SetupWorld()
 end
 
 return api
