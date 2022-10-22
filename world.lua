@@ -2,6 +2,7 @@
 SoundHandler = require("soundHandler")
 MusicHandler = require("musicHandler")
 EffectsHandler = require("effectsHandler")
+EntityHandler = require("entityHandler")
 LevelHandler = require("levelHandler")
 
 Camera = require("utilities/cameraUtilities")
@@ -205,6 +206,7 @@ function api.Update(dt, realDt)
 	InterfaceUtil.Update(dt)
 	
 	EffectsHandler.Update(dt)
+	EntityHandler.Update(dt)
 	UpdateCamera()
 end
 
@@ -224,6 +226,7 @@ function api.Draw()
 	end
 	
 	EffectsHandler.Draw(drawQueue)
+	EntityHandler.Draw(drawQueue)
 	LevelHandler.Draw(drawQueue)
 	
 	if not Global.DEBUG_NO_SHADOW and not (Global.DEBUG_SPACE_ZOOM_OUT and love.keyboard.isDown("space")) then
@@ -275,6 +278,7 @@ function api.Initialize(levelIndex, levelTableOverride, musicEnabled)
 	SoundHandler.Initialize()
 	MusicHandler.Initialize(api)
 	
+	EntityHandler.Initialize(api)
 	LevelHandler.Initialize(api, self.levelIndex, self.levelTableOverride)
 	
 	-- Note that the camera pins only function for these particular second entries.

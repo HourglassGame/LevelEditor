@@ -14,6 +14,9 @@ local globals = {
 	
 	VIEW_WIDTH = 3000,
 	VIEW_HEIGHT = 1560,
+	
+	DEFAULT_LEVEL = "3StandardBoxPuzzle",
+	HG_GRID_SIZE = 3200
 }
 
 return globals

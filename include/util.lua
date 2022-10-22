@@ -660,7 +660,7 @@ function util.LoadDefDirectory(dir)
 		done = true
 		for i = 1, #nameList do
 			local name = nameList[i]
-			if defTable[name].inheritFrom then
+			if type(defTable[name]) == "table" and defTable[name].inheritFrom then
 				defTable[name] = util.CopyTable(defTable[defTable[name].inheritFrom], true, defTable[name])
 				defTable[name].inheritFrom = nil
 				done = false

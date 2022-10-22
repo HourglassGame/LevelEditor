@@ -14,7 +14,34 @@ local function CalculateDrawScale()
 	self.drawScale = math.min(widthFactor, heightFactor)
 end
 
+function api.GetDrawScale()
+	return self.drawScale
+end
+
+function api.HgToWorld(var)
+	local scale = (self.level.segmentSize * self.drawScale) / Global.HG_GRID_SIZE
+	if type(var) == "table" then
+		return util.Mult(scale, var)
+	end
+	return var * scale
+end
+
+function api.WorldToHg(var)
+	local scale = Global.HG_GRID_SIZE / (self.level.segmentSize * self.drawScale)
+	if type(var) == "table" then
+		return util.Mult(scale, var)
+	end
+	return var * scale
+end
+
+local function InitialiseNewLevel()
+
+end
+
 local function SetupWorld(levelData)
+	if not levelData then
+		InitialiseNewLevel()
+	end
 	self.level = {}
 	
 	local dataWall = levelData.environment.wall
@@ -31,6 +58,19 @@ local function SetupWorld(levelData)
 	self.level.segmentSize = dataWall.segmentSize
 	CalculateDrawScale()
 	
+	if levelData.initialArrivals then
+		for i = 1, # levelData.initialArrivals do
+			local box = levelData.initialArrivals[i]
+			EntityHandler.AddEntity("box", {
+				pos = {box.x, box.y},
+				width = box.width or box.size,
+				height = box.height or box.size,
+				boxType = box.type,
+				timeDirection = box.timeDirection,
+				speedVec = {box.xspeed, box.yspeed},
+			})
+		end
+	end
 end
 
 local function SafeLoadString(str)
@@ -39,7 +79,7 @@ local function SafeLoadString(str)
 		return false
 	end
 	local strFunc = loadstring(str)
-	print(str)
+	--print(str)
 	if not strFunc then
 		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Error loading level.", velocity = {0, 4}})
 		return false
@@ -151,7 +191,7 @@ end
 	if not levelData.trig then
 		return
 	end
-	util.PrintTable(levelData.trig)
+	--util.PrintTable(levelData.trig)
 	
 	SetupWorld(levelData)
 	return true
@@ -195,7 +235,7 @@ function api.TownWantPopup(pos)
 end
 
 function api.KeyPressed(key, scancode, isRepeat)
-	self.enteredText = self.enteredText or "1EasyStart"
+	self.enteredText = self.enteredText or Global.DEFAULT_LEVEL
 	
 	if self.loadingLevelGetName or self.saveLevelGetName then
 		if key and string.len(key) == 1 then
