@@ -107,12 +107,16 @@ function api.KeyPressed(key, scancode, isRepeat)
 end
 
 function api.MousePressed(x, y, button)
+	self.pressButton = button
 	if api.GetPaused() then
 		return
 	end
 	local uiX, uiY = self.interfaceTransform:inverse():transformPoint(x, y)
 	
 	if LevelHandler.MousePressed(x, y, button) then
+		return
+	end
+	if ShopHandler.MousePressed(x, y, button) then
 		return
 	end
 	if api.GetGameOver() then
@@ -132,11 +136,14 @@ end
 
 function api.MouseReleased(x, y, button)
 	x, y = self.cameraTransform:inverse():transformPoint(x, y)
+	self.pressButton = false
 	-- Send event to game components
 end
 
 function api.MouseMoved(x, y, dx, dy)
-	
+	if ShopHandler.MouseMoved(x, y, self.pressButton, dx, dy) then
+		return
+	end
 end
 
 function api.WorldToScreen(pos)

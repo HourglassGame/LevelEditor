@@ -5,6 +5,8 @@ local util = require("include/util")
 local EntityDefs = util.LoadDefDirectory("defs/entities")
 local NewEntity = require("objects/entity")
 
+NewProp = util.LoadDefDirectory("objects/properties")
+
 local self = {}
 local api = {}
 

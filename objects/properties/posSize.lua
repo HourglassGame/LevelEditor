@@ -1,19 +1,40 @@
 
+local util = require("include/util")
+
 local function PosSize(pos, width, height)
 	local self = {
-		pos = pos,
-		width = width,
-		height = height,
+		propX = NewProp.numberBox('X', pos[1]),
+		propY = NewProp.numberBox('Y', pos[2]),
+		propW = NewProp.numberBox('W', width, 400),
+		propH = NewProp.numberBox('H', height, 400),
 	}
 	
+	
 	local function GetWorldDimensions()
-		return LevelHandler.HgToWorld(self.pos[1]), LevelHandler.HgToWorld(self.pos[2]), LevelHandler.HgToWorld(self.width), LevelHandler.HgToWorld(self.height)
+		local x, y = LevelHandler.HgToWorld(self.propX.Get()), LevelHandler.HgToWorld(self.propY.Get())
+		local w, h = LevelHandler.HgToWorld(self.propW.Get()), LevelHandler.HgToWorld(self.propH.Get())
+		return x, y, w, h
 	end
 	
 	local api = {}
+	self.worldClickToggle = NewProp.worldClickButton('Move Box', api)
+	
+	function api.GetWorldClickProp()
+		return self.worldClickToggle
+	end
+	
+	function api.HandleWorldClick(pos)
+		pos = ShopHandler.SnapToGrid(pos)
+		self.propX.Set(pos[1])
+		self.propY.Set(pos[2])
+	end
 	
 	function api.HitTest(pos)
-		return util.PosInRectangle(pos, self.pos[1], self.pos[2], self.width, self.height)
+		return util.PosInRectangle(pos, self.propX.Get(), self.propY.Get(), self.propW.Get(), self.propH.Get())
+	end
+	
+	function api.DrawProperty(drawX, drawY)
+		
 	end
 	
 	function api.DrawOutline()

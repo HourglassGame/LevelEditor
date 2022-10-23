@@ -7,6 +7,11 @@ local function TimeDirection(dir, imageF, imageR)
 	}
 	
 	local api = {}
+	
+	function api.DrawProperty(drawX, drawY)
+	
+	end
+	
 	function api.GetImage()
 		if dir == "forwards" then
 			return imageF
