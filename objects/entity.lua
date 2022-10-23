@@ -22,6 +22,12 @@ local function NewEntity(self, def)
 		end
 	end
 	
+	function api.DeleteIfHit(pos)
+		if (not def.undeletable) and self.posSize.HitTest(pos) then
+			return true
+		end
+	end
+	
 	function api.DrawOutline(drawQueue, outlineType)
 		drawQueue:push({y=def.drawLayer; f=function()
 			if outlineType == "hover" then

@@ -141,6 +141,9 @@ local function SetupMenu()
 			LevelHandler.RemoveWall(pos)
 		end
 	end
+	local function DeleteEntity(pos)
+		EntityHandler.RemoveEntitiesAtPos(pos)
+	end
 	local function AddDefaultEntity(name)
 		EntityHandler.AddEntity(name, {pos = {LevelHandler.Width() * Global.HG_GRID_SIZE * 0.5, LevelHandler.Height() * Global.HG_GRID_SIZE * 0.5}})
 	end
@@ -150,13 +153,16 @@ local function SetupMenu()
 	self.placeGridSize = NewProp.numberBox(api, "Grid Snap", 800, 100, 100)
 	self.toggleWall = NewProp.worldClickButton(api, "Add/Delete Wall", ToggleWall)
 	
+	self.deleteEntity = NewProp.worldClickButton(api, "Delete Entities", DeleteEntity)
 	self.boxSelector = NewProp.enumBox(api, "", "", {"box", "bomb", "balloon", "light"}, AddDefaultEntity, "New Box")
 	
 	self.propList = {
 		self.levelWidth,
 		self.levelHeight,
 		self.placeGridSize,
+		NewProp.heading(api, ""),
 		self.toggleWall,
+		self.deleteEntity,
 		NewProp.heading(api, ""),
 		self.boxSelector
 	}

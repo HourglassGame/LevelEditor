@@ -24,6 +24,10 @@ function api.HitTest(pos)
 	return hit
 end
 
+function api.RemoveEntitiesAtPos(pos)
+	IterableMap.ApplySelf(self.entities, "DeleteIfHit", pos)
+end
+
 function api.Update(dt)
 	--IterableMap.ApplySelf(self.entities, "Update", dt)
 end
