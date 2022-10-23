@@ -7,16 +7,14 @@ local self = {}
 local api = {}
 
 function api.SnapToGrid(pos)
-	return {math.floor(pos[1] / self.placeGridSize) * self.placeGridSize, math.floor(pos[2] / self.placeGridSize) * self.placeGridSize}
+	return {math.floor(0.5 + pos[1] / self.placeGridSize.Get()) * self.placeGridSize.Get(), math.floor(0.5 + pos[2] / self.placeGridSize.Get()) * self.placeGridSize.Get()}
 end
 
 local function DoEntityClick(mousePos, button)
 	if self.hoveredItem and button == 1 then
-		if self.selectedItem then
-			if self.selectedProperty then
-				self.selectedProperty.SetSelected(false)
-				self.selectedProperty = false
-			end
+		if self.selectedProperty then
+			self.selectedProperty.SetSelected(false)
+			self.selectedProperty = false
 		end
 		self.selectedItem = self.hoveredItem
 		self.selectedProperty = self.selectedItem.GetDefaultSelectedProperty()
@@ -45,7 +43,7 @@ local function DoPropertyClick(mousePos, button, mouseMove)
 		return true
 	elseif self.selectedProperty and button == 1 and mousePos[1] < Global.VIEW_WIDTH + Global.MAIN_PADDING then
 		if self.selectedProperty.HandleWorldClick then
-			self.selectedProperty.HandleWorldClick(LevelHandler.WorldToHg(mousePos))
+			self.selectedProperty.HandleWorldClick(LevelHandler.WorldToHg(mousePos), mouseMove)
 			return true
 		end
 	end
@@ -91,8 +89,7 @@ function api.KeyPressed(key, scancode, isRepeat)
 	end
 end
 
-local function DrawEntityProperties(drawQueue, entity, mousePos)
-	local propList = entity.GetPropertyList()
+local function DrawEntityProperties(drawQueue, propList, mousePos)
 	local offset, hovered = 0, false
 	for i = 1, #propList do
 		offset, hovered = propList[i].DrawProperty(drawQueue, Global.VIEW_WIDTH + 30, offset, mousePos)
@@ -116,16 +113,60 @@ function api.Draw(drawQueue)
 	end
 	if self.selectedItem then
 		self.selectedItem.DrawOutline(drawQueue, "selected")
-		DrawEntityProperties(drawQueue, self.selectedItem, mousePos)
+		DrawEntityProperties(drawQueue, self.selectedItem.GetPropertyList(), mousePos)
+	else
+		DrawEntityProperties(drawQueue, self.propList, mousePos)
 	end
 end
 
+function api.UpdateLevelSize(width, height)
+	self.levelWidth.Set(width)
+	self.levelHeight.Set(height)
+end
+
+local function SetupMenu()
+	local function SetWidth(newVal)
+		LevelHandler.SetWidth(newVal)
+	end
+	local function SetHeight(name)
+		LevelHandler.SetHeight(newVal)
+	end
+	local function ToggleWall(pos, fromMouseMove)
+		if not fromMouseMove then
+			self.wallAddMode = not LevelHandler.WallAt(pos)
+		end
+		if self.wallAddMode then
+			LevelHandler.AddWall(pos)
+		else
+			LevelHandler.RemoveWall(pos)
+		end
+	end
+	local function AddDefaultEntity(name)
+		EntityHandler.AddEntity(name, {pos = {LevelHandler.Width() * Global.HG_GRID_SIZE * 0.5, LevelHandler.Height() * Global.HG_GRID_SIZE * 0.5}})
+	end
+
+	self.levelWidth = NewProp.numberBox(api, "Level Width", LevelHandler.Width(), 1, 1, SetWidth)
+	self.levelHeight = NewProp.numberBox(api, "Level Height",LevelHandler.Height(), 1, 1, SetHeight)
+	self.placeGridSize = NewProp.numberBox(api, "Grid Snap", 800, 100, 100)
+	self.toggleWall = NewProp.worldClickButton(api, "Add/Delete Wall", ToggleWall)
+	
+	self.boxSelector = NewProp.enumBox(api, "", "", {"box", "bomb", "balloon", "light"}, AddDefaultEntity, "New Box")
+	
+	self.propList = {
+		self.levelWidth,
+		self.levelHeight,
+		self.placeGridSize,
+		self.toggleWall,
+		NewProp.heading(api, ""),
+		self.boxSelector
+	}
+end
 
 function api.Initialize(world)
 	self = {
 		world = world,
-		placeGridSize = 800
 	}
+	SetupMenu()
 end
 
 return api

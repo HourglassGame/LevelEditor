@@ -41,6 +41,7 @@ local function InitialiseNewLevel()
 	self.level.height = 3
 	self.level.segmentSize = 3200
 	CalculateDrawScale()
+	ShopHandler.UpdateLevelSize(self.level.width, self.level.height)
 end
 
 local function SetupWorld(levelData)
@@ -63,6 +64,7 @@ local function SetupWorld(levelData)
 	self.level.height = dataWall.height
 	self.level.segmentSize = dataWall.segmentSize
 	CalculateDrawScale()
+	ShopHandler.UpdateLevelSize(self.level.width, self.level.height)
 	
 	if levelData.initialArrivals then
 		for i = 1, # levelData.initialArrivals do
@@ -100,11 +102,27 @@ local function SafeLoadString(str)
 end
 
 function api.Width()
-	return self.width
+	return self.level and self.level.width
 end
 
 function api.Height()
-	return self.height
+	return self.level and self.level.height
+end
+
+function api.SetWidth(newVal)
+	if not (newVal and self.level and self.level.height) then
+		return
+	end
+	self.level.width = newVal
+	CalculateDrawScale()
+end
+
+function api.SetHeight(newVal)
+	if not (newVal and self.level and self.level.height) then
+		return
+	end
+	self.level.height = newVal
+	CalculateDrawScale()
 end
 
 function api.TileSize()
@@ -209,7 +227,7 @@ function api.SaveLevel(name)
 	return success
 end
 
-function api.WorldToGrid(pos)
+function api.HgToGrid(pos)
 	return self.level and {math.floor(pos[1] / self.level.segmentSize), math.floor(pos[2] / self.level.segmentSize)}
 end
 
@@ -224,7 +242,19 @@ function api.WallAtGrid(pos)
 end
 
 function api.WallAt(pos)
-	return api.WallAtGrid(api.WorldToGrid(pos))
+	return api.WallAtGrid(api.HgToGrid(pos))
+end
+
+function api.AddWall(pos)
+	pos = api.HgToGrid(pos)
+	self.level.wall[pos[1]] = self.level.wall[pos[1]] or {}
+	self.level.wall[pos[1]][pos[2]] = 1
+end
+
+function api.RemoveWall(pos)
+	pos = api.HgToGrid(pos)
+	self.level.wall[pos[1]] = self.level.wall[pos[1]] or {}
+	self.level.wall[pos[1]][pos[2]] = 0
 end
 
 function api.IsMenuOpen()
@@ -293,25 +323,6 @@ function api.KeyPressed(key, scancode, isRepeat)
 	local level = self.level
 	if not level then
 		return
-	end
-	
-	local varyRate = ((love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) and 5) or 1
-	if key == "z" then
-		level.width = math.max(1, level.width - varyRate)
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Width: " .. level.width, velocity = {0, 4}})
-		CalculateDrawScale()
-	elseif key == "x" then
-		level.width = level.width + varyRate
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Width: " .. level.width, velocity = {0, 4}})
-		CalculateDrawScale()
-	elseif key == "c" then
-		level.height = math.max(1, level.height - varyRate)
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Height: " .. level.height, velocity = {0, 4}})
-		CalculateDrawScale()
-	elseif key == "v" then
-		level.height = level.height + varyRate
-		EffectsHandler.SpawnEffect("error_popup", {480, 15}, {text = "Height: " .. level.height, velocity = {0, 4}})
-		CalculateDrawScale()
 	end
 end
 

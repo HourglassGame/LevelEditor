@@ -2,11 +2,12 @@
 local util = require("include/util")
 local Font = require("include/font")
 
-local function EnumBox(parent, name, value, options, applyFunc)
+local function EnumBox(parent, name, value, options, applyFunc, textOverride)
 	local self = {
 		name = name,
 		value = value,
 		options = options,
+		textOverride = textOverride
 	}
 	
 	local api = {}
@@ -46,8 +47,8 @@ local function EnumBox(parent, name, value, options, applyFunc)
 		else
 			love.graphics.setColor(0, 0, 0, 0.8)
 		end
-		love.graphics.printf(name, drawX, drawY, Global.SHOP_WIDTH * 0.5 - 10, "right")
-		love.graphics.printf(self.value, drawX + Global.SHOP_WIDTH * 0.5 + 10, drawY, Global.SHOP_WIDTH, "left")
+		love.graphics.printf(self.name, drawX, drawY, Global.SHOP_WIDTH * 0.5 - 10, "right")
+		love.graphics.printf(self.textOverride or self.value, drawX + Global.SHOP_WIDTH * 0.5 + 10, drawY, Global.SHOP_WIDTH, "left")
 		
 		local x, y, w, h = drawX + Global.SHOP_WIDTH * 0.5, drawY + 4, Global.SHOP_WIDTH * 0.5, Global.PROP_SPACING - 8
 		local hovered = util.PosInRectangle(mousePos, x, y, w, h)

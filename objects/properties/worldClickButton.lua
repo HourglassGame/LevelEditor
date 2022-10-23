@@ -2,7 +2,7 @@
 local util = require("include/util")
 local Font = require("include/font")
 
-local function WorldClickButton(parent, name)
+local function WorldClickButton(parent, name, applyFunc)
 	local self = {
 		name = name,
 	}
@@ -10,8 +10,12 @@ local function WorldClickButton(parent, name)
 	local api = {
 	}
 	
-	function api.HandleWorldClick(pos)
-		parent.HandleWorldClick(pos)
+	function api.HandleWorldClick(pos, fromMouseMove)
+		if applyFunc then
+			applyFunc(pos, fromMouseMove)
+			return
+		end
+		parent.HandleWorldClick(pos, fromMouseMove)
 	end
 	
 	function api.SetSelected(newState)
@@ -27,7 +31,7 @@ local function WorldClickButton(parent, name)
 			love.graphics.setColor(0, 0, 0, 0.8)
 			love.graphics.printf("Disabled", drawX + Global.SHOP_WIDTH * 0.5 + 10, drawY, Global.SHOP_WIDTH, "left")
 		end
-		love.graphics.printf(name, drawX, drawY, Global.SHOP_WIDTH * 0.5 - 10, "right")
+		love.graphics.printf(self.name, drawX, drawY, Global.SHOP_WIDTH * 0.5 - 10, "right")
 		
 		local x, y, w, h = drawX + Global.SHOP_WIDTH * 0.5, drawY + 4, Global.SHOP_WIDTH * 0.5, Global.PROP_SPACING - 8
 		local hovered = util.PosInRectangle(mousePos, x, y, w, h)

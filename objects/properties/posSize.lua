@@ -35,10 +35,10 @@ local function PosSize(parent, pos, width, height)
 		self.propH.Set(newHeight)
 	end
 	
-	function api.HandleWorldClick(pos)
+	function api.HandleWorldClick(pos, fromMouseMove)
 		pos = ShopHandler.SnapToGrid(pos)
-		self.propX.Set(pos[1])
-		self.propY.Set(pos[2])
+		self.propX.Set(pos[1] - self.propW.Get()*0.5)
+		self.propY.Set(pos[2] - self.propW.Get()*0.5)
 	end
 	
 	function api.HitTest(pos)

@@ -2,7 +2,7 @@
 local util = require("include/util")
 local Font = require("include/font")
 
-local function NumberBox(parent, name, value, minValue, divisor)
+local function NumberBox(parent, name, value, minValue, divisor, applyFunc)
 	local self = {
 		name = name,
 		divisor = (divisor or Global.HG_GRID_SIZE),
@@ -20,6 +20,9 @@ local function NumberBox(parent, name, value, minValue, divisor)
 		end
 		self.value = newValue
 		self.valueStr = tostring(self.value)
+		if applyFunc then
+			applyFunc(self.value)
+		end
 	end
 	
 	function api.Get()
@@ -30,6 +33,9 @@ local function NumberBox(parent, name, value, minValue, divisor)
 		local newVal = tonumber(self.valueStr)
 		if newVal and ((not self.minValue) or newVal >= self.minValue) then
 			self.value = newVal
+			if applyFunc then
+				applyFunc(self.value)
+			end
 		end
 	end
 	
@@ -63,7 +69,7 @@ local function NumberBox(parent, name, value, minValue, divisor)
 		else
 			love.graphics.setColor(0, 0, 0, 0.8)
 		end
-		love.graphics.printf(name, drawX, drawY, Global.SHOP_WIDTH * 0.5 - 10, "right")
+		love.graphics.printf(self.name, drawX, drawY, Global.SHOP_WIDTH * 0.5 - 10, "right")
 		love.graphics.printf(self.valueStr, drawX + Global.SHOP_WIDTH * 0.5 + 10, drawY, Global.SHOP_WIDTH, "left")
 		
 		local x, y, w, h = drawX + Global.SHOP_WIDTH * 0.5, drawY + 4, Global.SHOP_WIDTH * 0.5, Global.PROP_SPACING - 8
