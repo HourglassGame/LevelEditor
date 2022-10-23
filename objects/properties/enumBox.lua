@@ -2,7 +2,7 @@
 local util = require("include/util")
 local Font = require("include/font")
 
-local function EnumBox(parent, name, value, options)
+local function EnumBox(parent, name, value, options, applyFunc)
 	local self = {
 		name = name,
 		value = value,
@@ -27,6 +27,9 @@ local function EnumBox(parent, name, value, options)
 		
 		if self.hoverItem then
 			self.value = self.options[self.hoverItem]
+			if applyFunc then
+				applyFunc(self.value)
+			end
 			ShopHandler.DeselectProperty()
 			return true
 		end

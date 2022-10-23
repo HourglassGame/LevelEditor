@@ -30,6 +30,11 @@ local function PosSize(parent, pos, width, height)
 		return self.worldClickToggle
 	end
 	
+	function api.SetSize(newWidth, newHeight)
+		self.propW.Set(newWidth)
+		self.propH.Set(newHeight)
+	end
+	
 	function api.HandleWorldClick(pos)
 		pos = ShopHandler.SnapToGrid(pos)
 		self.propX.Set(pos[1])
