@@ -73,7 +73,8 @@ local function SetupWorld(levelData)
 				height = box.height or box.size,
 				boxType = box.type,
 				timeDirection = box.timeDirection,
-				speedVec = {box.xspeed, box.yspeed},
+				xspeed = box.xspeed,
+				yspeed = box.yspeed,
 			})
 		end
 	end

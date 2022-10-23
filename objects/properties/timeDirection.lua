@@ -1,15 +1,15 @@
 
 local function TimeDirection(parent, dir, imageF, imageR)
 	local self = {
-		dir = dir,
+		dir =  NewProp.enumBox(api, 'Time Direction', dir, {"forwards", "reverse"}),
 		imageF = imageF,
 		imageR = imageR,
 	}
 	
 	local api = {}
 	
-	function api.DrawProperty(drawX, drawY, mousePos)
-	
+	function api.DrawProperty(drawQueue, drawX, drawY, mousePos)
+		return self.dir.DrawProperty(drawQueue, drawX, drawY, mousePos)
 	end
 	
 	function api.GetImage()

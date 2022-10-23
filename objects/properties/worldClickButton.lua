@@ -18,7 +18,7 @@ local function WorldClickButton(parent, name)
 		self.selected = newState
 	end
 	
-	function api.DrawProperty(drawX, drawY, mousePos)
+	function api.DrawProperty(drawQueue, drawX, drawY, mousePos)
 		Font.SetSize(1)
 		if self.selected then
 			love.graphics.setColor(1, 1, 1, 0.8)

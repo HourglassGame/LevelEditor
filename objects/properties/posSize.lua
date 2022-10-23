@@ -40,10 +40,10 @@ local function PosSize(parent, pos, width, height)
 		return util.PosInRectangle(pos, self.propX.Get(), self.propY.Get(), self.propW.Get(), self.propH.Get())
 	end
 	
-	function api.DrawProperty(drawX, drawY, mousePos)
+	function api.DrawProperty(drawQueue, drawX, drawY, mousePos)
 		local hovered, thisHovered = false
 		for i = 1, #self.propList do
-			drawY, thisHovered = self.propList[i].DrawProperty(drawX, drawY, mousePos)
+			drawY, thisHovered = self.propList[i].DrawProperty(drawQueue, drawX, drawY, mousePos)
 			if thisHovered then
 				hovered = thisHovered
 			end

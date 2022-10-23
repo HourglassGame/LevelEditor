@@ -2,36 +2,38 @@
 local util = require("include/util")
 local Font = require("include/font")
 
-local function NumberBox(parent, name, value, minValue)
+local function NumberBox(parent, name, value, minValue, divisor)
 	local self = {
 		name = name,
-		value = value / Global.HG_GRID_SIZE,
+		divisor = (divisor or Global.HG_GRID_SIZE),
+		value = (value or 0) / (divisor or Global.HG_GRID_SIZE),
+		minValue = minValue and minValue / (divisor or Global.HG_GRID_SIZE),
 	}
 	self.valueStr = tostring(self.value)
 	
 	local api = {}
 	
 	function api.Set(newValue)
-		if minValue and newValue < minValue then
-			newValue = minValue
+		newValue = newValue / self.divisor
+		if self.minValue and newValue < self.minValue then
+			newValue = self.minValue
 		end
-		self.value = newValue / Global.HG_GRID_SIZE
+		self.value = newValue
 		self.valueStr = tostring(self.value)
 	end
 	
-	function api.Get(newValue)
-		return self.value * Global.HG_GRID_SIZE
+	function api.Get()
+		return self.value * self.divisor
 	end
 	
 	local function UpdateValueFromStr()
 		local newVal = tonumber(self.valueStr)
-		if newVal and ((not minValue) or newVal >= (minValue / Global.HG_GRID_SIZE)) then
+		if newVal and ((not self.minValue) or newVal >= self.minValue) then
 			self.value = newVal
 		end
 	end
 	
 	function api.HandleKeyPress(key)
-		print(key)
 		if key == "backspace" or key == "delete" then
 			if string.len(self.valueStr) > 0 then
 				self.valueStr = string.sub(self.valueStr, 0, string.len(self.valueStr) - 1)
@@ -54,7 +56,7 @@ local function NumberBox(parent, name, value, minValue)
 		end
 	end
 	
-	function api.DrawProperty(drawX, drawY, mousePos)
+	function api.DrawProperty(drawQueue, drawX, drawY, mousePos)
 		Font.SetSize(1)
 		if self.selected then
 			love.graphics.setColor(1, 1, 1, 0.8)

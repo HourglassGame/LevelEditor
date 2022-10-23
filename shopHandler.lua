@@ -32,8 +32,11 @@ local function DoEntityClick(mousePos, button)
 	end
 end
 
-local function DoPropertyClick(mousePos, button)
-	if self.hoveredProperty and button == 1 then
+local function DoPropertyClick(mousePos, button, mouseMove)
+	if (not mouseMove) and self.selectedProperty and self.selectedProperty.HandleMousePress and self.selectedProperty.HandleMousePress(mousePos, button) then
+		return true
+	end
+	if (not mouseMove) and self.hoveredProperty and button == 1 then
 		if self.selectedProperty then
 			self.selectedProperty.SetSelected(false)
 		end
@@ -77,10 +80,7 @@ end
 
 function api.MouseMoved(x, y, button, dx, dy)
 	local mousePos = self.world.GetMousePosition()
-	if DoPropertyClick(mousePos, button) then
-		return true
-	end
-	if DoEntityClick(mousePos, button) then
+	if DoPropertyClick(mousePos, button, true) then
 		return true
 	end
 end
@@ -91,12 +91,11 @@ function api.KeyPressed(key, scancode, isRepeat)
 	end
 end
 
-local function DrawEntityProperties(entity, mousePos)
+local function DrawEntityProperties(drawQueue, entity, mousePos)
 	local propList = entity.GetPropertyList()
 	local offset, hovered = 0, false
-	self.hoveredProperty = false
 	for i = 1, #propList do
-		offset, hovered = propList[i].DrawProperty(Global.VIEW_WIDTH + 30, offset, mousePos)
+		offset, hovered = propList[i].DrawProperty(drawQueue, Global.VIEW_WIDTH + 30, offset, mousePos)
 		if hovered then
 			self.hoveredProperty = hovered
 		end
@@ -106,6 +105,7 @@ end
 function api.Draw(drawQueue)
 	local mousePos = self.world.GetMousePosition()
 	self.hoveredItem = false
+	self.hoveredProperty = false
 	local hgPos = LevelHandler.WorldToHg(mousePos)
 	local hitEntity = EntityHandler.HitTest(hgPos)
 	if hitEntity then
@@ -116,7 +116,7 @@ function api.Draw(drawQueue)
 	end
 	if self.selectedItem then
 		self.selectedItem.DrawOutline(drawQueue, "selected")
-		DrawEntityProperties(self.selectedItem, mousePos)
+		DrawEntityProperties(drawQueue, self.selectedItem, mousePos)
 	end
 end
 
