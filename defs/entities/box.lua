@@ -2,18 +2,18 @@
 local util = require("include/util")
 
 local entity = {
-	Create = function (self)
+	Create = function (self, api)
 		-- pos = {x, y}
 		-- width
 		-- height
-		self.posSize = NewProp.posSize(self.pos, self.width, self.height)
-		self.timeDirection = NewProp.timeDirection(self.timeDirection, "box", "box_r")
+		self.posSize = NewProp.posSize(api, self.pos, self.width, self.height)
+		self.timeDirection = NewProp.timeDirection(api, self.timeDirection, "box", "box_r")
 		
 		self.propList = {
 			self.posSize,
 			self.timeDirection
 		}
-		self.activeClickProp = self.posSize.GetWorldClickProp()
+		self.defaultSelection = self.posSize.GetWorldClickProp()
 		
 		return self
 	end,

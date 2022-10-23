@@ -1,5 +1,5 @@
 
-local function TimeDirection(dir, imageF, imageR)
+local function TimeDirection(parent, dir, imageF, imageR)
 	local self = {
 		dir = dir,
 		imageF = imageF,
@@ -8,7 +8,7 @@ local function TimeDirection(dir, imageF, imageR)
 	
 	local api = {}
 	
-	function api.DrawProperty(drawX, drawY)
+	function api.DrawProperty(drawX, drawY, mousePos)
 	
 	end
 	

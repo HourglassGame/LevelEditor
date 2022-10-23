@@ -13,10 +13,13 @@ local globals = {
 	INC_OFFSET = -15,
 	
 	VIEW_WIDTH = 3000,
-	VIEW_HEIGHT = 1560,
+	VIEW_HEIGHT = 1800,
+	SHOP_WIDTH = 800,
+	MAIN_PADDING = 150,
+	PROP_SPACING = 64,
 	
 	DEFAULT_LEVEL = "3StandardBoxPuzzle",
-	HG_GRID_SIZE = 3200
+	HG_GRID_SIZE = 3200,
 }
 
 return globals

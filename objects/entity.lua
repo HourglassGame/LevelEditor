@@ -5,25 +5,24 @@ local Font = require("include/font")
 
 
 local function NewEntity(self, def)
-	self = def.Create(self)
+	local api = {}
+	self = def.Create(self, api)
 	
-	function self.GetPropertyList()
+	function api.GetPropertyList()
 		return self.propList
 	end
 	
-	function self.HitTest(pos, hitFunc)
+	function api.GetDefaultSelectedProperty()
+		return self.defaultSelection
+	end
+	
+	function api.HitTest(pos, hitFunc)
 		if self.posSize.HitTest(pos) then
-			hitFunc(self)
+			hitFunc(api)
 		end
 	end
 	
-	function self.HandleWorldClick(pos)
-		if self.activeClickProp then
-			self.activeClickProp.HandleWorldClick(pos)
-		end
-	end
-	
-	function self.DrawOutline(drawQueue, outlineType)
+	function api.DrawOutline(drawQueue, outlineType)
 		drawQueue:push({y=def.drawLayer; f=function()
 			if outlineType == "hover" then
 				love.graphics.setColor(0.1, 0.7, 0.7, 0.4)
@@ -34,13 +33,13 @@ local function NewEntity(self, def)
 		end})
 	end
 	
-	function self.Draw(drawQueue)
+	function api.Draw(drawQueue)
 		drawQueue:push({y=def.drawLayer; f=function()
 			self.posSize.Draw((def.ImageFunc and def.ImageFunc()) or def.image or self.timeDirection.GetImage())
 		end})
 	end
 	
-	return self
+	return api
 end
 
 return NewEntity

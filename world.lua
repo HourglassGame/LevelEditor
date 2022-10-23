@@ -195,8 +195,8 @@ end
 local function UpdateCamera()
 	local cameraX, cameraY, cameraScale = Camera.UpdateCameraToViewPoints(dt, 
 		{
-			{pos = {0, 0}, radius = 210},
-			{pos = {Global.VIEW_WIDTH, Global.VIEW_HEIGHT}, radius = 210}
+			{pos = {0, 0}, radius = Global.MAIN_PADDING},
+			{pos = {Global.VIEW_WIDTH + Global.SHOP_WIDTH, Global.VIEW_HEIGHT}, radius = Global.MAIN_PADDING}
 		}, 0, 0)
 	Camera.UpdateTransform(self.cameraTransform, cameraX, cameraY, cameraScale)
 end

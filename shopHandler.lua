@@ -11,12 +11,40 @@ function api.SnapToGrid(pos)
 end
 
 local function DoEntityClick(mousePos, button)
-	if self.selectedItem and button == 1 then
-		self.selectedItem.HandleWorldClick(LevelHandler.WorldToHg(mousePos))
-	elseif self.hoveredItem and button == 1 then
+	if self.hoveredItem and button == 1 then
+		if self.selectedItem then
+			if self.selectedProperty then
+				self.selectedProperty.SetSelected(false)
+				self.selectedProperty = false
+			end
+		end
 		self.selectedItem = self.hoveredItem
+		self.selectedProperty = self.selectedItem.GetDefaultSelectedProperty()
+		self.selectedProperty.SetSelected(true)
+		return true
 	elseif self.selectedItem and button == 2 then
+		if self.selectedProperty then
+			self.selectedProperty.SetSelected(false)
+			self.selectedProperty = false
+		end
 		self.selectedItem = false
+		return true
+	end
+end
+
+local function DoPropertyClick(mousePos, button)
+	if self.hoveredProperty and button == 1 then
+		if self.selectedProperty then
+			self.selectedProperty.SetSelected(false)
+		end
+		self.selectedProperty = self.hoveredProperty
+		self.hoveredProperty.SetSelected(true)
+		return true
+	elseif self.selectedProperty and button == 1 and mousePos[1] < Global.VIEW_WIDTH + Global.MAIN_PADDING then
+		if self.selectedProperty.HandleWorldClick then
+			self.selectedProperty.HandleWorldClick(LevelHandler.WorldToHg(mousePos))
+			return true
+		end
 	end
 end
 
@@ -25,12 +53,22 @@ end
 
 function api.MousePressed(x, y, button)
 	local mousePos = self.world.GetMousePosition()
-	DoEntityClick(mousePos, button)
+	if DoPropertyClick(mousePos, button) then
+		return
+	end
+	if DoEntityClick(mousePos, button) then
+		return
+	end
 end
 
 function api.MouseMoved(x, y, button, dx, dy)
 	local mousePos = self.world.GetMousePosition()
-	DoEntityClick(mousePos, button)
+	if DoPropertyClick(mousePos, button) then
+		return
+	end
+	if DoEntityClick(mousePos, button) then
+		return
+	end
 end
 
 local function DrawEntityProperties(entity, mousePos)
@@ -38,10 +76,9 @@ local function DrawEntityProperties(entity, mousePos)
 	local offset, hovered = 0, false
 	self.hoveredProperty = false
 	for i = 1, #propList do
-		offset, hovered = propList[i].DrawProperty(Global.VIEW_WIDTH + 30, offset)
+		offset, hovered = propList[i].DrawProperty(Global.VIEW_WIDTH + 30, offset, mousePos)
 		if hovered then
 			self.hoveredProperty = hovered
-
 		end
 	end
 end
