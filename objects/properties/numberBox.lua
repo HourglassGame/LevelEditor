@@ -5,8 +5,9 @@ local Font = require("include/font")
 local function NumberBox(parent, name, value, minValue)
 	local self = {
 		name = name,
-		value = value,
+		value = value / Global.HG_GRID_SIZE,
 	}
+	self.valueStr = tostring(self.value)
 	
 	local api = {}
 	
@@ -14,15 +15,43 @@ local function NumberBox(parent, name, value, minValue)
 		if minValue and newValue < minValue then
 			newValue = minValue
 		end
-		value = newValue
+		self.value = newValue / Global.HG_GRID_SIZE
+		self.valueStr = tostring(self.value)
 	end
 	
 	function api.Get(newValue)
-		return value
+		return self.value * Global.HG_GRID_SIZE
+	end
+	
+	local function UpdateValueFromStr()
+		local newVal = tonumber(self.valueStr)
+		if newVal and ((not minValue) or newVal >= (minValue / Global.HG_GRID_SIZE)) then
+			self.value = newVal
+		end
+	end
+	
+	function api.HandleKeyPress(key)
+		print(key)
+		if key == "backspace" or key == "delete" then
+			if string.len(self.valueStr) > 0 then
+				self.valueStr = string.sub(self.valueStr, 0, string.len(self.valueStr) - 1)
+				UpdateValueFromStr()
+			end
+			return
+		elseif key == "return" or key == "kpenter" then
+			ShopHandler.DeselectProperty()
+			return
+		end
+		key = string.gsub(key, "kp", "")
+		self.valueStr = self.valueStr .. key
+		UpdateValueFromStr()
 	end
 	
 	function api.SetSelected(newState)
 		self.selected = newState
+		if not self.selected then
+			self.valueStr = tostring(self.value)
+		end
 	end
 	
 	function api.DrawProperty(drawX, drawY, mousePos)
@@ -33,7 +62,7 @@ local function NumberBox(parent, name, value, minValue)
 			love.graphics.setColor(0, 0, 0, 0.8)
 		end
 		love.graphics.printf(name, drawX, drawY, Global.SHOP_WIDTH * 0.5 - 10, "right")
-		love.graphics.printf(value, drawX + Global.SHOP_WIDTH * 0.5 + 10, drawY, Global.SHOP_WIDTH, "left")
+		love.graphics.printf(self.valueStr, drawX + Global.SHOP_WIDTH * 0.5 + 10, drawY, Global.SHOP_WIDTH, "left")
 		
 		local x, y, w, h = drawX + Global.SHOP_WIDTH * 0.5, drawY + 4, Global.SHOP_WIDTH * 0.5, Global.PROP_SPACING - 8
 		local hovered = util.PosInRectangle(mousePos, x, y, w, h)

@@ -77,12 +77,15 @@ function api.SetPaused(newPause, force)
 end
 
 function api.KeyPressed(key, scancode, isRepeat)
+	if ShopHandler.KeyPressed(key, scancode, isRepeat) then
+		return
+	end
 	if LevelHandler.KeyPressed(key, scancode, isRepeat) then
 		return
 	end
-	if key == "escape" or key == "return" or key == "kpenter" then
-		self.paused = not self.paused
-	end
+	--if key == "escape" or key == "return" or key == "kpenter" then
+	--	self.paused = not self.paused
+	--end
 	if key == "r" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
 		api.Restart()
 	end
@@ -113,10 +116,10 @@ function api.MousePressed(x, y, button)
 	end
 	local uiX, uiY = self.interfaceTransform:inverse():transformPoint(x, y)
 	
-	if LevelHandler.MousePressed(x, y, button) then
+	if ShopHandler.MousePressed(x, y, button) then
 		return
 	end
-	if ShopHandler.MousePressed(x, y, button) then
+	if LevelHandler.MousePressed(x, y, button) then
 		return
 	end
 	if api.GetGameOver() then

@@ -38,7 +38,7 @@ local function DoPropertyClick(mousePos, button)
 			self.selectedProperty.SetSelected(false)
 		end
 		self.selectedProperty = self.hoveredProperty
-		self.hoveredProperty.SetSelected(true)
+		self.selectedProperty.SetSelected(true)
 		return true
 	elseif self.selectedProperty and button == 1 and mousePos[1] < Global.VIEW_WIDTH + Global.MAIN_PADDING then
 		if self.selectedProperty.HandleWorldClick then
@@ -48,26 +48,46 @@ local function DoPropertyClick(mousePos, button)
 	end
 end
 
+local function DoPropertyKeyPress(key, scancode, isRepeat)
+	if self.selectedProperty and self.selectedProperty.HandleKeyPress then
+		self.selectedProperty.HandleKeyPress(key)
+	end
+end
+
+function api.DeselectProperty()
+	if self.selectedProperty then
+		self.selectedProperty.SetSelected(false)
+		self.selectedProperty = false
+	end
+end
+
 function api.Update(dt)
+	
 end
 
 function api.MousePressed(x, y, button)
 	local mousePos = self.world.GetMousePosition()
 	if DoPropertyClick(mousePos, button) then
-		return
+		return true
 	end
 	if DoEntityClick(mousePos, button) then
-		return
+		return true
 	end
 end
 
 function api.MouseMoved(x, y, button, dx, dy)
 	local mousePos = self.world.GetMousePosition()
 	if DoPropertyClick(mousePos, button) then
-		return
+		return true
 	end
 	if DoEntityClick(mousePos, button) then
-		return
+		return true
+	end
+end
+
+function api.KeyPressed(key, scancode, isRepeat)
+	if DoPropertyKeyPress(key, scancode, isRepeat) then
+		return true
 	end
 end
 
