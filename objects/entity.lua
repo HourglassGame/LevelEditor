@@ -41,7 +41,7 @@ local function NewEntity(self, def)
 	
 	function api.Draw(drawQueue)
 		drawQueue:push({y=def.drawLayer; f=function()
-			self.posSize.Draw((def.ImageFunc and def.ImageFunc()) or def.image or self.timeDirection.GetImage())
+			self.posSize.Draw((def.ImageFunc and def.ImageFunc(self)) or def.image or self.timeDirection.GetImage())
 		end})
 	end
 	

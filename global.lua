@@ -20,6 +20,21 @@ local globals = {
 	
 	DEFAULT_LEVEL = "3StandardBoxPuzzle",
 	HG_GRID_SIZE = 3200,
+	
+	PICKUP_LIST = {
+		"timeJump",
+		"timeReverse",
+		"timeGun",
+		"reverseGun",
+		"timePause",
+	},
+	BOX_TYPES = {
+		"none",
+		"box",
+		"bomb",
+		"light",
+		"balloon",
+	},
 }
 
 return globals

@@ -16,6 +16,10 @@ local function DoEntityClick(mousePos, button)
 			self.selectedProperty.SetSelected(false)
 			self.selectedProperty = false
 		end
+		if not self.selectedItem then
+			-- Stop entities repositioning when clicking on them followed by an accidental mouse movement.
+			self.ignoreMouseMove = true
+		end
 		self.selectedItem = self.hoveredItem
 		self.selectedProperty = self.selectedItem.GetDefaultSelectedProperty()
 		self.selectedProperty.SetSelected(true)
@@ -67,6 +71,7 @@ function api.Update(dt)
 end
 
 function api.MousePressed(x, y, button)
+	self.ignoreMouseMove = false
 	local mousePos = self.world.GetMousePosition()
 	if DoPropertyClick(mousePos, button) then
 		return true
@@ -77,6 +82,9 @@ function api.MousePressed(x, y, button)
 end
 
 function api.MouseMoved(x, y, button, dx, dy)
+	if self.ignoreMouseMove then
+		return
+	end
 	local mousePos = self.world.GetMousePosition()
 	if DoPropertyClick(mousePos, button, true) then
 		return true
@@ -119,9 +127,11 @@ function api.Draw(drawQueue)
 	end
 end
 
-function api.UpdateLevelSize(width, height)
-	self.levelWidth.Set(width)
-	self.levelHeight.Set(height)
+function api.UpdateLevelParams(level)
+	self.levelWidth.Set(level.width)
+	self.levelHeight.Set(level.height)
+	self.timeLength.Set(level.timeLength)
+	self.timeSpeed.Set(level.timeSpeed)
 end
 
 local function SetupMenu()
@@ -130,6 +140,12 @@ local function SetupMenu()
 	end
 	local function SetHeight(name)
 		LevelHandler.SetHeight(newVal)
+	end
+	local function SetTimeLength(newVal)
+		LevelHandler.SetLevelParameter("timeLength", newVal)
+	end
+	local function SetTimeSpeed(newVal)
+		LevelHandler.SetLevelParameter("timeSpeed", newVal)
 	end
 	local function ToggleWall(pos, fromMouseMove)
 		if not fromMouseMove then
@@ -150,22 +166,34 @@ local function SetupMenu()
 
 	self.levelWidth = NewProp.numberBox(api, "Level Width", LevelHandler.Width(), 1, 1, SetWidth)
 	self.levelHeight = NewProp.numberBox(api, "Level Height",LevelHandler.Height(), 1, 1, SetHeight)
-	self.placeGridSize = NewProp.numberBox(api, "Grid Snap", 800, 100, 100)
-	self.toggleWall = NewProp.worldClickButton(api, "Add/Delete Wall", ToggleWall)
+	self.timeLength = NewProp.numberBox(api, "Time Length (s)", LevelHandler.GetTimeLength(), 60, 60, SetTimeLength)
+	self.timeSpeed = NewProp.numberBox(api, "Time Speed (s/s)", LevelHandler.GetTimeSpeed(), 1, 1, SetTimeSpeed)
 	
+	self.placeGridSize = NewProp.numberBox(api, "Place Grid Snap", 800, 100, 100)
+	self.toggleWall = NewProp.worldClickButton(api, "Add/Delete Wall", ToggleWall)
 	self.deleteEntity = NewProp.worldClickButton(api, "Delete Entities", DeleteEntity)
 	self.boxSelector = NewProp.enumBox(api, "", "", {"box", "bomb", "balloon", "light"}, AddDefaultEntity, "New Box")
 	
 	self.propList = {
 		self.levelWidth,
 		self.levelHeight,
-		self.placeGridSize,
+		self.timeLength,
+		self.timeSpeed,
 		NewProp.heading(api, ""),
+		self.placeGridSize,
 		self.toggleWall,
 		self.deleteEntity,
 		NewProp.heading(api, ""),
 		self.boxSelector
 	}
+end
+
+function api.ResetState()
+	if self.selectedProperty then
+		self.selectedProperty.SetSelected(false)
+		self.selectedProperty = false
+	end
+	self.selectedItem = false
 end
 
 function api.Initialize(world)

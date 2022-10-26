@@ -27,9 +27,12 @@ local function EnumBox(parent, name, value, options, applyFunc, textOverride)
 		end
 		
 		if self.hoverItem then
-			self.value = self.options[self.hoverItem]
-			if applyFunc then
-				applyFunc(self.value)
+			if self.hoverItem > 0 then
+				-- Use zero to mean current item (own box)
+				self.value = self.options[self.hoverItem]
+				if applyFunc then
+					applyFunc(self.value)
+				end
 			end
 			ShopHandler.DeselectProperty()
 			return true
@@ -63,7 +66,7 @@ local function EnumBox(parent, name, value, options, applyFunc, textOverride)
 		love.graphics.rectangle("line", x, y, w, h)
 		
 		if self.selected then
-			self.hoverItem = false
+			self.hoverItem = hovered and 0
 			for i = 1, #self.options do
 				drawY = drawY + Global.PROP_SPACING
 				x, y, w, h = drawX + Global.SHOP_WIDTH * 0.5, drawY + 4, Global.SHOP_WIDTH * 0.5, Global.PROP_SPACING - 8

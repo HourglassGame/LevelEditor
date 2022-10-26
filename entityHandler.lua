@@ -36,6 +36,9 @@ function api.Draw(drawQueue)
 	IterableMap.ApplySelf(self.entities, "Draw", drawQueue)
 end
 
+function api.DeleteAll()
+	self.entities = IterableMap.New()
+end
 
 function api.Initialize(world)
 	self = {

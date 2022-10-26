@@ -35,21 +35,28 @@ function api.WorldToHg(var)
 end
 
 local function InitialiseNewLevel()
-	self.level = {}
 	self.level.wall = {}
-	self.level.width = 3
-	self.level.height = 3
+	self.level.width = 32
+	self.level.height = 19
 	self.level.segmentSize = 3200
+	self.level.timeLength = 10800
+	self.level.timeSpeed = 24
+	
+	EntityHandler.AddEntity("guy", {pos = {self.level.width * Global.HG_GRID_SIZE * 0.5, self.level.height * Global.HG_GRID_SIZE * 0.5}})
+	
 	CalculateDrawScale()
-	ShopHandler.UpdateLevelSize(self.level.width, self.level.height)
+	ShopHandler.UpdateLevelParams(self.level)
 end
 
 local function SetupWorld(levelData)
+	self.level = {}
+	ShopHandler.ResetState()
+	EntityHandler.DeleteAll()
+	
 	if not levelData then
 		InitialiseNewLevel()
 		return
 	end
-	self.level = {}
 	
 	local dataWall = levelData.environment.wall
 	local grid = {}
@@ -63,8 +70,10 @@ local function SetupWorld(levelData)
 	self.level.width = dataWall.width
 	self.level.height = dataWall.height
 	self.level.segmentSize = dataWall.segmentSize
+	self.level.timeLength = levelData.timelineLength
+	self.level.timeSpeed = levelData.speedOfTime
 	CalculateDrawScale()
-	ShopHandler.UpdateLevelSize(self.level.width, self.level.height)
+	ShopHandler.UpdateLevelParams(self.level)
 	
 	if levelData.initialArrivals then
 		for i = 1, # levelData.initialArrivals do
@@ -109,6 +118,14 @@ function api.Height()
 	return self.level and self.level.height
 end
 
+function api.GetTimeLength()
+	return self.level and self.level.timelineLength
+end
+
+function api.GetTimeSpeed()
+	return self.level and self.level.timeSpeed
+end
+
 function api.SetWidth(newVal)
 	if not (newVal and self.level and self.level.height) then
 		return
@@ -123,6 +140,13 @@ function api.SetHeight(newVal)
 	end
 	self.level.height = newVal
 	CalculateDrawScale()
+end
+
+function api.SetLevelParameter(name, newVal)
+	if not (newVal and self.level) then
+		return
+	end
+	self.level[name] = newVal
 end
 
 function api.TileSize()
