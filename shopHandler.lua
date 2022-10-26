@@ -50,6 +50,8 @@ local function DoPropertyClick(mousePos, button, mouseMove)
 			self.selectedProperty.HandleWorldClick(LevelHandler.WorldToHg(mousePos), mouseMove)
 			return true
 		end
+	elseif self.selectedProperty and button == 2 then
+		api.DeselectProperty()
 	end
 end
 

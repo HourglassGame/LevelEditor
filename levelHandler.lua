@@ -58,6 +58,7 @@ local function SetupWorld(levelData)
 		return
 	end
 	
+	-- Setup wall
 	local dataWall = levelData.environment.wall
 	local grid = {}
 	for i = 1, #dataWall do
@@ -70,11 +71,20 @@ local function SetupWorld(levelData)
 	self.level.width = dataWall.width
 	self.level.height = dataWall.height
 	self.level.segmentSize = dataWall.segmentSize
+	
+	-- Setup timeline
 	self.level.timeLength = levelData.timelineLength
 	self.level.timeSpeed = levelData.speedOfTime
 	CalculateDrawScale()
 	ShopHandler.UpdateLevelParams(self.level)
 	
+	-- Setup guy
+	local guyParams = levelData.initialGuy.arrival
+	guyParams.arrivalTime = levelData.initialGuy.arrivalTime
+	guyParams.pos = {guyParams.x, guyParams.y}
+	EntityHandler.AddEntity("guy", guyParams)
+	
+	-- Setup boxes
 	if levelData.initialArrivals then
 		for i = 1, # levelData.initialArrivals do
 			local box = levelData.initialArrivals[i]
