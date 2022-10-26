@@ -16,7 +16,7 @@ local function DoEntityClick(mousePos, button)
 			self.selectedProperty.SetSelected(false)
 			self.selectedProperty = false
 		end
-		if not self.selectedItem then
+		if Global.IGNORE_MOVE_ON_SELECT and not self.selectedItem then
 			-- Stop entities repositioning when clicking on them followed by an accidental mouse movement.
 			self.ignoreMouseMove = true
 		end

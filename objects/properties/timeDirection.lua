@@ -21,9 +21,9 @@ local function TimeDirection(parent, dir, imageF, imageR)
 	end
 	
 	function api.GetImage()
-		if dir == "forwards" then
+		if self.dir.Get() == "forwards" then
 			return imageF
-		elseif dir == "reverse" then
+		elseif self.dir.Get() == "reverse" then
 			return imageR
 		end
 	end

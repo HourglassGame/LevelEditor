@@ -21,6 +21,8 @@ local globals = {
 	DEFAULT_LEVEL = "3StandardBoxPuzzle",
 	HG_GRID_SIZE = 3200,
 	
+	IGNORE_MOVE_ON_SELECT = false,
+	
 	PICKUP_LIST = {
 		"timeJump",
 		"timeReverse",
