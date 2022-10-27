@@ -162,8 +162,10 @@ local function SetupMenu()
 	local function DeleteEntity(pos)
 		EntityHandler.RemoveEntitiesAtPos(pos)
 	end
-	local function AddDefaultEntity(name)
-		EntityHandler.AddEntity(name, {pos = {LevelHandler.Width() * Global.HG_GRID_SIZE * 0.5, LevelHandler.Height() * Global.HG_GRID_SIZE * 0.5}})
+	local function AddDefaultEntity(name, data)
+		data = data or {}
+		data.pos = {LevelHandler.Width() * Global.HG_GRID_SIZE * 0.5, LevelHandler.Height() * Global.HG_GRID_SIZE * 0.5}
+		EntityHandler.AddEntity(name, data)
 	end
 
 	self.levelWidth = NewProp.numberBox(api, "Level Width", LevelHandler.Width(), 1, 1, SetWidth)
@@ -175,6 +177,7 @@ local function SetupMenu()
 	self.toggleWall = NewProp.worldClickButton(api, "Add/Delete Wall", ToggleWall)
 	self.deleteEntity = NewProp.worldClickButton(api, "Delete Entities", DeleteEntity)
 	self.boxSelector = NewProp.enumBox(api, "", "", {"box", "bomb", "balloon", "light"}, AddDefaultEntity, "New Box")
+	self.pickupSelector = NewProp.enumBox(api, "", "", Global.PICKUP_LIST, function (name) AddDefaultEntity("pickup", {pickupType = name}) end, "New Pickup")
 	
 	self.propList = {
 		self.levelWidth,
@@ -186,7 +189,8 @@ local function SetupMenu()
 		self.toggleWall,
 		self.deleteEntity,
 		NewProp.heading(api, ""),
-		self.boxSelector
+		self.boxSelector,
+		self.pickupSelector,
 	}
 end
 

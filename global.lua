@@ -18,7 +18,7 @@ local globals = {
 	MAIN_PADDING = 150,
 	PROP_SPACING = 64,
 	
-	DEFAULT_LEVEL = "3StandardBoxPuzzle",
+	DEFAULT_LEVEL = "7TimeBelt",
 	HG_GRID_SIZE = 3200,
 	
 	IGNORE_MOVE_ON_SELECT = false,

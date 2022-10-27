@@ -28,6 +28,25 @@ function api.RemoveEntitiesAtPos(pos)
 	IterableMap.ApplySelf(self.entities, "DeleteIfHit", pos)
 end
 
+function api.LoadLevelItems(triggers, items)
+	
+	for i = 1, #items.protoMutators do
+		local proto = items.protoMutators[i]
+		if proto.btsType == "pickup" then
+			local data = {
+				pos = {proto.attachment.xOffset, proto.attachment.yOffset},
+				width = proto.width,
+				height = proto.height,
+				timeDirection = proto.timeDirection,
+				pickupType = proto.pickupType,
+				--triggerID = 1,
+				-- Attachment ID
+			}
+			api.AddEntity("pickup", data)
+		end
+	end
+end
+
 function api.Update(dt)
 	--IterableMap.ApplySelf(self.entities, "Update", dt)
 end

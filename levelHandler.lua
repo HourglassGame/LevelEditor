@@ -88,17 +88,20 @@ local function SetupWorld(levelData)
 	if levelData.initialArrivals then
 		for i = 1, # levelData.initialArrivals do
 			local box = levelData.initialArrivals[i]
-			EntityHandler.AddEntity("box", {
+			EntityHandler.AddEntity(box.boxType or "box", {
 				pos = {box.x, box.y},
 				width = box.width or box.size,
 				height = box.height or box.size,
-				boxType = box.type,
 				timeDirection = box.timeDirection,
 				xspeed = box.xspeed,
 				yspeed = box.yspeed,
 			})
 		end
 	end
+	
+	-- Setup triggers 
+	--TriggerHandler.LoadTriggers()
+	EntityHandler.LoadLevelItems(levelData.triggerSystem, levelData.items)
 end
 
 local function SafeLoadString(str)
@@ -246,11 +249,11 @@ end
 		end
 	end
 	
-	levelData.trig = SafeLoadString(trigStr)
-	if not levelData.trig then
+	levelData.items = SafeLoadString(trigStr)
+	if not levelData.items then
 		return
 	end
-	--util.PrintTable(levelData.trig)
+	--util.PrintTable(levelData.items)
 	
 	SetupWorld(levelData)
 	return true
