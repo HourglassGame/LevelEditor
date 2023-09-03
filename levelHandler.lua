@@ -162,12 +162,8 @@ function api.SetLevelParameter(name, newVal)
 	self.level[name] = newVal
 end
 
-function api.TileSize()
-	return self.tileSize
-end
-
-function api.TileScale()
-	return self.tileSize / Global.GRID_SIZE
+function api.GetTileSize()
+	return self.level.segmentSize
 end
 
 function api.GetVertOffset()
@@ -253,7 +249,7 @@ end
 	if not levelData.items then
 		return
 	end
-	--util.PrintTable(levelData.items)
+	util.PrintTable(levelData)
 	
 	SetupWorld(levelData)
 	return true
@@ -386,10 +382,10 @@ end
 function api.DrawInterface()
 	local gameOver, gameWon, gameLost = self.world.GetGameOver()
 	local windowX, windowY = love.window.getMode()
-	local overX = windowX*0.32
-	local overWidth = windowX*0.36
-	local overY = windowY*0.3
-	local overHeight = windowY*0.4
+	local overX = windowX*0.25
+	local overWidth = windowX*0.5
+	local overY = windowY*0.25
+	local overHeight = windowY*0.5
 	
 	local drawWindow = self.loadingLevelGetName or self.saveLevelGetName or self.townWantConf
 	if drawWindow then

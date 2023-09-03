@@ -2,7 +2,7 @@
 local util = require("include/util")
 local Font = require("include/font")
 
-local function WorldClickButton(parent, name, applyFunc)
+local function WorldClickButton(parent, name, applyFunc, extraArgs)
 	local self = {
 		name = name,
 	}
@@ -12,7 +12,11 @@ local function WorldClickButton(parent, name, applyFunc)
 	
 	function api.HandleWorldClick(pos, fromMouseMove)
 		if applyFunc then
-			applyFunc(pos, fromMouseMove)
+			if extraArgs then
+				applyFunc(pos, fromMouseMove, unpack(extraArgs))
+			else
+				applyFunc(pos, fromMouseMove)
+			end
 			return
 		end
 		parent.HandleWorldClick(pos, fromMouseMove)

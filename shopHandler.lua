@@ -149,14 +149,19 @@ local function SetupMenu()
 	local function SetTimeSpeed(newVal)
 		LevelHandler.SetLevelParameter("timeSpeed", newVal)
 	end
-	local function ToggleWall(pos, fromMouseMove)
+	local function ToggleWall(pos, fromMouseMove, size)
 		if not fromMouseMove then
 			self.wallAddMode = not LevelHandler.WallAt(pos)
 		end
-		if self.wallAddMode then
-			LevelHandler.AddWall(pos)
-		else
-			LevelHandler.RemoveWall(pos)
+		size = (size or 0) * LevelHandler.GetTileSize()
+		for x = pos[1] - size, pos[1] + size, LevelHandler.GetTileSize() do
+			for y = pos[2] - size, pos[2] + size, LevelHandler.GetTileSize() do
+				if self.wallAddMode then
+					LevelHandler.AddWall({x, y})
+				else
+					LevelHandler.RemoveWall({x, y})
+				end
+			end
 		end
 	end
 	local function DeleteEntity(pos)
@@ -174,7 +179,9 @@ local function SetupMenu()
 	self.timeSpeed = NewProp.numberBox(api, "Time Speed (s/s)", LevelHandler.GetTimeSpeed(), 1, 1, SetTimeSpeed)
 	
 	self.placeGridSize = NewProp.numberBox(api, "Place Grid Snap", 800, 100, 100)
-	self.toggleWall = NewProp.worldClickButton(api, "Add/Delete Wall", ToggleWall)
+	self.toggleWallSmall = NewProp.worldClickButton(api, "Wall Brush 1", ToggleWall, {0})
+	self.toggleWallMedium = NewProp.worldClickButton(api, "Wall Brush 2", ToggleWall, {1})
+	self.toggleWallLarge = NewProp.worldClickButton(api, "Wall Brush 3", ToggleWall, {2})
 	self.deleteEntity = NewProp.worldClickButton(api, "Delete Entities", DeleteEntity)
 	self.boxSelector = NewProp.enumBox(api, "", "", {"box", "bomb", "balloon", "light"}, AddDefaultEntity, "New Box")
 	self.pickupSelector = NewProp.enumBox(api, "", "", Global.PICKUP_LIST, function (name) AddDefaultEntity("pickup", {pickupType = name}) end, "New Pickup")
@@ -186,7 +193,9 @@ local function SetupMenu()
 		self.timeSpeed,
 		NewProp.heading(api, ""),
 		self.placeGridSize,
-		self.toggleWall,
+		self.toggleWallSmall,
+		self.toggleWallMedium,
+		self.toggleWallLarge,
 		self.deleteEntity,
 		NewProp.heading(api, ""),
 		self.boxSelector,
