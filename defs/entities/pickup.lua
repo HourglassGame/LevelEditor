@@ -17,15 +17,16 @@ local entity = {
 		self.posSize = NewProp.posSize(api, self.pos, self.width or 0.5*Global.HG_GRID_SIZE, self.height or 0.5*Global.HG_GRID_SIZE)
 		self.timeDirection = NewProp.timeDirection(api, self.timeDirection or "forwards")
 		--self.attachment = 
-		--self.triggerID = 
 		self.pickupType = NewProp.enumBox(api, "Type", self.pickupType or "timeJump", Global.PICKUP_LIST)
 		self.pickupNumber = NewProp.numberBox(api, "Count", self.pickupNumber or 1, 1, 1)
+		self.triggerID = NewProp.textBox(api, "Trigger", "test")
 		
 		self.propList = {
 			self.posSize,
 			self.timeDirection,
 			self.pickupType,
 			self.pickupNumber,
+			self.triggerID,
 		}
 		self.defaultSelection = self.posSize.GetWorldClickProp()
 		
