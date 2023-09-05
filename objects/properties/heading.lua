@@ -2,7 +2,7 @@
 local util = require("include/util")
 local Font = require("include/font")
 
-local function Spacer(parent, name)
+local function Heading(parent, name)
 	local self = {
 		name = name,
 	}
@@ -20,7 +20,11 @@ local function Spacer(parent, name)
 		return drawY
 	end
 	
+	function api.GetSelected()
+		return false
+	end
+	
 	return api
 end
 
-return Spacer
+return Heading

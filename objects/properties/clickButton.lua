@@ -17,6 +17,10 @@ local function ClickButton(parent, name, applyFunc)
 		end
 	end
 	
+	function api.GetSelected()
+		return false
+	end
+	
 	function api.DrawProperty(drawQueue, drawX, drawY, mousePos)
 		Font.SetSize(1)
 		love.graphics.setColor(0, 0, 0, 0.8)

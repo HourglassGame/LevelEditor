@@ -20,6 +20,10 @@ local function TimeDirection(parent, dir, imageF, imageR)
 		return self.dir.DrawProperty(drawQueue, drawX, drawY, mousePos)
 	end
 	
+	function api.GetSelected()
+		return self.dir.GetSelected()
+	end
+	
 	function api.GetImage()
 		if self.dir.Get() == "forwards" then
 			return imageF

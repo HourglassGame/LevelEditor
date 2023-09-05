@@ -1,13 +1,32 @@
 
 local util = require("include/util")
 
-local nameToImage = {
-	timeJump    = "time_jump",
-	timeReverse = "time_reverse",
-	timeGun     = "time_gun",
-	timePause   = "time_pause",
-	reverseGun  = "reverse_gun",
-}
+local function momentarySwitch(p)
+	return {
+		type = 'momentarySwitch',
+		timeDirection = p.timeDirection,
+		attachment = cloneAttachment(p.attachment),
+		width = p.width,
+		height = p.height,
+		pressForceReq = p.pressForceReq or 0,
+		triggerID = p.triggerID,
+		stateTriggerID = p.stateTriggerID,
+		extraTriggerIDs = p.extraTriggerIDs,
+	}
+end
+local function stickySwitch(p)
+	return {
+		type = 'stickySwitch',
+		timeDirection = p.timeDirection,
+		attachment = cloneAttachment(p.attachment),
+		width = p.width,
+		height = p.height,
+		pressForceReq = p.pressForceReq or 0,
+		triggerID = p.triggerID,
+		stateTriggerID = p.stateTriggerID,
+		extraTriggerIDs = p.extraTriggerIDs,
+	}
+end
 
 local entity = {
 	Create = function (self, api)

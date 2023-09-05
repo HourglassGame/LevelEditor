@@ -62,6 +62,10 @@ local function NumberBox(parent, name, value, minValue, divisor, applyFunc)
 		end
 	end
 	
+	function api.GetSelected()
+		return self.selected
+	end
+	
 	function api.DrawProperty(drawQueue, drawX, drawY, mousePos)
 		Font.SetSize(1)
 		if self.selected then

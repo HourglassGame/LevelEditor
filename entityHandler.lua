@@ -1,6 +1,7 @@
 
 local IterableMap = require("include/IterableMap")
 local util = require("include/util")
+local loadingUtilities = require("utilities/loadingUtilities")
 
 local EntityDefs = util.LoadDefDirectory("defs/entities")
 local NewEntity = require("objects/entity")
@@ -29,7 +30,10 @@ function api.RemoveEntitiesAtPos(pos)
 end
 
 function api.LoadLevelItems(triggers, items)
-	
+	for i = 1, #items.protoCollisions do
+		local proto = items.protoCollisions[i]
+		api.AddEntity("platform", loadingUtilities.LoadPlatform(proto, triggers))
+	end
 	for i = 1, #items.protoMutators do
 		local proto = items.protoMutators[i]
 		if proto.btsType == "pickup" then
@@ -39,7 +43,7 @@ function api.LoadLevelItems(triggers, items)
 				height = proto.height,
 				timeDirection = proto.timeDirection,
 				pickupType = proto.pickupType,
-				--triggerID = 1,
+				triggerName = IndexNameHandler.GetOrMakeTriggerName(proto.triggerID, proto.btsType),
 				-- Attachment ID
 			}
 			api.AddEntity("pickup", data)

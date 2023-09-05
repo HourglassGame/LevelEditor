@@ -100,7 +100,7 @@ local function SetupWorld(levelData)
 	end
 	
 	-- Setup triggers 
-	--TriggerHandler.LoadTriggers()
+	--IndexNameHandler.LoadTriggers()
 	EntityHandler.LoadLevelItems(levelData.triggerSystem, levelData.items)
 end
 

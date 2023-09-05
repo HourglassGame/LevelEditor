@@ -14,6 +14,10 @@ local function BoolBox(parent, name, default)
 		return (self.dir.Get() == "true")
 	end
 	
+	function api.GetSelected()
+		return value.GetSelected()
+	end
+	
 	function api.DrawProperty(drawQueue, drawX, drawY, mousePos)
 		return self.value.DrawProperty(drawQueue, drawX, drawY, mousePos)
 	end

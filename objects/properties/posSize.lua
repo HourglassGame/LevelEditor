@@ -1,30 +1,68 @@
 
 local util = require("include/util")
 
-local function PosSize(parent, pos, width, height)
+local function PosSize(parent, pos, width, height, extras)
 	local api = {}
 	local self = {
 		propX = NewProp.numberBox(api, 'X', pos[1]),
 		propY = NewProp.numberBox(api, 'Y', pos[2]),
-		propW = NewProp.numberBox(api, 'Width', width, 400),
-		propH = NewProp.numberBox(api, 'Height', height, 400),
 		worldClickToggle = NewProp.worldClickButton(api, 'Click Move')
 	}
 	
-	local function GetWorldDimensions()
-		local x, y = LevelHandler.HgToWorld(self.propX.Get()), LevelHandler.HgToWorld(self.propY.Get())
-		local w, h = LevelHandler.HgToWorld(self.propW.Get()), LevelHandler.HgToWorld(self.propH.Get())
-		return x, y, w, h
+	self.propList = {}
+	if extras and extras.name then
+		self.propList[#self.propList + 1] = NewProp.heading(api, extras.name)
 	end
 	
+	self.propList[#self.propList + 1] = self.worldClickToggle
+	self.propList[#self.propList + 1] = self.propX
+	self.propList[#self.propList + 1] = self.propY
 	
-	self.propList = {
-		self.worldClickToggle,
-		self.propX,
-		self.propY,
-		self.propW,
-		self.propH,
-	}
+	if width then
+		self.propW = NewProp.numberBox(api, 'Width', width, 400)
+		self.propList[#self.propList + 1] = self.propW
+	end
+	if height then
+		self.propH = NewProp.numberBox(api, 'Height', height, 400)
+		self.propList[#self.propList + 1] = self.propH
+	end
+	
+	if extras and extras.speed then
+		self.xSpeed = NewProp.numberBox(api, 'X Speed', (type(extras.speed) == "table" and extras.speed[1]) or 0, 0, 1)
+		self.ySpeed = NewProp.numberBox(api, 'Y Speed', (type(extras.speed) == "table" and extras.speed[2]) or 0, 0, 1)
+		self.propList[#self.propList + 1] = self.xSpeed
+		if not extras.accel then
+			self.propList[#self.propList + 1] = self.ySpeed
+		end
+	end
+	if extras and extras.accel then
+		self.xAccel = NewProp.numberBox(api, 'X Accel', (type(extras.accel) == "table" and extras.accel[1]) or 0, 0, 1)
+		self.xDecel = NewProp.numberBox(api, 'X Decel', (type(extras.decel) == "table" and extras.decel[1]) or 0, 0, 1)
+		self.yAccel = NewProp.numberBox(api, 'Y Accel', (extras.accel and type(extras.accel) == "table" and extras.accel[2]) or 0, 0, 1)
+		self.yDecel = NewProp.numberBox(api, 'Y Decel', (extras.accel and type(extras.decel) == "table" and extras.decel[2]) or 0, 0, 1)
+		
+		self.propList[#self.propList + 1] = self.xAccel
+		self.propList[#self.propList + 1] = self.xDecel
+		if extras.speed then
+			self.propList[#self.propList + 1] = self.ySpeed
+		end
+		self.propList[#self.propList + 1] = self.yAccel
+		self.propList[#self.propList + 1] = self.yDecel
+	end
+	
+	if extras and extras.readSizeFrom then
+		self.readSizeFrom = extras.readSizeFrom
+	end
+	if extras and extras.minimiseTo then
+		self.minimiseTo = extras.minimiseTo
+	end
+	
+	local function GetWorldDimensions()
+		local sizeSource = (self.readSizeFrom or api)
+		local x, y = LevelHandler.HgToWorld(self.propX.Get()), LevelHandler.HgToWorld(self.propY.Get())
+		local w, h = LevelHandler.HgToWorld(sizeSource.GetWidth()), LevelHandler.HgToWorld(sizeSource.GetHeight())
+		return x, y, w, h
+	end
 	
 	function api.GetWorldClickProp()
 		return self.worldClickToggle
@@ -35,19 +73,39 @@ local function PosSize(parent, pos, width, height)
 		self.propH.Set(newHeight)
 	end
 	
+	function api.GetWidth()
+		return self.propW.Get()
+	end
+	
+	function api.GetHeight()
+		return self.propH.Get()
+	end
+	
 	function api.HandleWorldClick(pos, fromMouseMove)
+		local sizeSource = (self.readSizeFrom or api)
 		pos = ShopHandler.SnapToGrid(pos)
-		self.propX.Set(pos[1] - self.propW.Get()*0.5)
-		self.propY.Set(pos[2] - self.propW.Get()*0.5)
+		self.propX.Set(pos[1] - sizeSource.GetWidth()*0.5)
+		self.propY.Set(pos[2] - sizeSource.GetHeight()*0.5)
 	end
 	
 	function api.HitTest(pos)
-		return util.PosInRectangle(pos, self.propX.Get(), self.propY.Get(), self.propW.Get(), self.propH.Get())
+		local sizeSource = (self.readSizeFrom or api)
+		return util.PosInRectangle(pos, self.propX.Get(), self.propY.Get(), sizeSource.GetWidth(), sizeSource.GetHeight())
+	end
+	
+	function api.GetSelected()
+		for i = 1, #self.propList do
+			if self.propList[i].GetSelected() then
+				return true
+			end
+		end
+		return false
 	end
 	
 	function api.DrawProperty(drawQueue, drawX, drawY, mousePos)
 		local hovered, thisHovered = false
-		for i = 1, #self.propList do
+		local drawCount = (((not self.minimiseTo) or api.GetSelected()) and #self.propList) or self.minimiseTo
+		for i = 1, drawCount do
 			drawY, thisHovered = self.propList[i].DrawProperty(drawQueue, drawX, drawY, mousePos)
 			if thisHovered then
 				hovered = thisHovered
@@ -60,6 +118,12 @@ local function PosSize(parent, pos, width, height)
 		local x, y, w, h = GetWorldDimensions()
 		love.graphics.setLineWidth(8)
 		love.graphics.rectangle("line", x - 8, y - 8, w + 16, h + 16, 8, 8, 12)
+	end
+	
+	function api.DrawRectangle()
+		local x, y, w, h = GetWorldDimensions()
+		love.graphics.setLineWidth(0)
+		love.graphics.rectangle("fill", x, y, w, h, 0, 0, 12)
 	end
 	
 	function api.Draw(image)
