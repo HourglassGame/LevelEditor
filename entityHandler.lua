@@ -32,7 +32,7 @@ end
 function api.LoadLevelItems(triggers, items)
 	for i = 1, #items.protoCollisions do
 		local proto = items.protoCollisions[i]
-		api.AddEntity("platform", loadingUtilities.LoadPlatform(proto, triggers))
+		api.AddEntity("platform", loadingUtilities.LoadPlatform(proto, i, triggers))
 	end
 	for i = 1, #items.protoMutators do
 		local proto = items.protoMutators[i]

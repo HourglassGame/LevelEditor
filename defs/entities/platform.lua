@@ -29,14 +29,17 @@ local entity = {
 			minimiseTo = 2,
 		})
 		
-		self.timeDirection = NewProp.timeDirection(api, self.timeDirection or "forwards")
-		--self.attachment = 
-		self.triggerName = NewProp.textBox(api, "Trigger", self.triggerName or IndexNameHandler.GetNewTriggerName('pickup'))
-		self.destroyed = NewProp.boolBox(api, "Destroyed", self.destroyed)
+		self.activeTriggerName = NewProp.textBox(api, "Active Trigger", self.activeTriggerName or IndexNameHandler.GetNewTriggerName('button'))
+		self.stateTriggerName  = NewProp.textBox(api, "State Trigger", self.stateTriggerName or IndexNameHandler.GetNewTriggerName('platform'))
+		self.platformName      = NewProp.textBox(api, "Platform Name", self.platformName or IndexNameHandler.GetNewPlatformName('attach'))
+		self.timeDirection     = NewProp.timeDirection(api, self.timeDirection or "forwards")
+		self.destroyed         = NewProp.boolBox(api, "Destroyed", self.destroyed)
 		
 		self.propList = {
+			self.activeTriggerName,
+			self.stateTriggerName,
+			self.platformName,
 			self.timeDirection,
-			self.triggerName,
 			self.destroyed,
 			
 			self.posSize,

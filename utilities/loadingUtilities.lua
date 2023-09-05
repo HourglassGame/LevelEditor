@@ -17,7 +17,7 @@ local function GetPlatformTarget(destination)
 	}
 end
 
-function api.LoadPlatform(proto, triggers)
+function api.LoadPlatform(proto, platformID, triggers)
 	local stateTrigger = triggers.triggerOffsetsAndDefaults[proto.lastStateTriggerID]
 	
 	local onPos, onSpeed, onAccel, onDecel = GetPlatformTarget(proto.destinations.onDestination)
@@ -38,8 +38,16 @@ function api.LoadPlatform(proto, triggers)
 		offAccel = offAccel,
 		offDecel = offDecel,
 		
+		activeTriggerName = IndexNameHandler.GetOrMakeTriggerName(proto.buttonTriggerID, "button"),
+		stateTriggerName  = IndexNameHandler.GetOrMakeTriggerName(proto.lastStateTriggerID, "platform"),
+		platformName      = IndexNameHandler.GetOrMakePlatformName(platformID, "attach"),
+		
+		timeDirection = (((stateTrigger.offset == 1) and "forwards") or "reverse"),
+		
 		destroyed = (stateTrigger[5] == 1),
 	}
+	
+	util.PrintTable(data)
 	
 	return data
 end
