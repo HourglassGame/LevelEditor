@@ -4,7 +4,7 @@ local api = {}
 function api.GetPressForceOptions()
 	return {
 		"heavy box",
-		"lightbox",
+		"light box",
 		"guy",
 	}
 end
