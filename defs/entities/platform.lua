@@ -3,16 +3,12 @@ local util = require("include/util")
 
 local entity = {
 	Create = function (self, api)
-		-- pos = {x, y}
-		-- width
-		-- height
-		-- triggerName
-		self.posSize = NewProp.posSize(api, self.startPos, self.width or 2*Global.HG_GRID_SIZE, self.height or 0.5*Global.HG_GRID_SIZE, {
+		self.posSize = NewProp.posSize(api, self.pos, self.width or 2*Global.HG_GRID_SIZE, self.height or 0.5*Global.HG_GRID_SIZE, {
 			speed = (self.startSpeed or true),
 			name = "Initial Position",
 			minimiseTo = 2,
 		})
-		self.onPos    = NewProp.posSize(api, self.onPos or self.startPos, false, false, {
+		self.onPos    = NewProp.posSize(api, self.onPos or self.pos, false, false, {
 			speed = (self.onSpeed or true),
 			accel = (self.onAccel or true),
 			decel = (self.onDecel or true),
@@ -20,7 +16,7 @@ local entity = {
 			name = "On Position",
 			minimiseTo = 2,
 		})
-		self.offPos   = NewProp.posSize(api, self.offPos or self.startPos, false, false, {
+		self.offPos   = NewProp.posSize(api, self.offPos or self.pos, false, false, {
 			speed = (self.offSpeed or true),
 			accel = (self.offAccel or true),
 			decel = (self.offDecel or true),

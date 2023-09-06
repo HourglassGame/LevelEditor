@@ -21,6 +21,7 @@ local function GetNewName(data, prefix)
 		nameIndex = nameIndex + 1
 		name = prefix .. tostring(nameIndex)
 	end
+	data.usedNames[name] = true
 	return name
 end
 

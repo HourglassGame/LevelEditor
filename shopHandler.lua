@@ -1,6 +1,7 @@
 
 local IterableMap = require("include/IterableMap")
 local util = require("include/util")
+local loadingUtilities = require("utilities/loadingUtilities")
 local Font = require("include/font")
 
 local self = {}
@@ -185,6 +186,7 @@ local function SetupMenu()
 	self.deleteEntity = NewProp.worldClickButton(api, "Delete Entities", DeleteEntity)
 	self.boxSelector = NewProp.enumBox(api, "", "", {"box", "bomb", "balloon", "light"}, AddDefaultEntity, "New Box")
 	self.pickupSelector = NewProp.enumBox(api, "", "", Global.PICKUP_LIST, function (name) AddDefaultEntity("pickup", {pickupType = name}) end, "New Pickup")
+	self.platformSelector = NewProp.enumBox(api, "", "", {"elevator", "platform", "door"}, function (name) AddDefaultEntity("platform", loadingUtilities.GetDefaultPlatform(name)) end, "New Platform")
 	
 	self.propList = {
 		self.levelWidth,
@@ -200,6 +202,7 @@ local function SetupMenu()
 		NewProp.heading(api, ""),
 		self.boxSelector,
 		self.pickupSelector,
+		self.platformSelector,
 	}
 end
 
