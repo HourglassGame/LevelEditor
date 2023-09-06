@@ -176,7 +176,7 @@ local function SetupMenu()
 
 	self.levelWidth = NewProp.numberBox(api, "Level Width", LevelHandler.Width(), 1, 1, SetWidth)
 	self.levelHeight = NewProp.numberBox(api, "Level Height",LevelHandler.Height(), 1, 1, SetHeight)
-	self.timeLength = NewProp.numberBox(api, "Time Length (s)", LevelHandler.GetTimeLength(), 60, 60, SetTimeLength)
+	self.timeLength = NewProp.numberBox(api, "Time Length (s)", LevelHandler.GetTimeLength(), 60, Global.FRAMES_PER_SECOND, SetTimeLength)
 	self.timeSpeed = NewProp.numberBox(api, "Time Speed (s/s)", LevelHandler.GetTimeSpeed(), 1, 1, SetTimeSpeed)
 	
 	self.placeGridSize = NewProp.numberBox(api, "Place Grid Snap", 800, 100, 100)

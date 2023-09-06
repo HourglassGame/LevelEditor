@@ -249,7 +249,6 @@ end
 	if not levelData.items then
 		return
 	end
-	util.PrintTable(levelData)
 	
 	SetupWorld(levelData)
 	return true
@@ -409,7 +408,7 @@ function api.DrawInterface()
 		love.graphics.printf("Type level name (Enter accept, ESC cancel)\n" .. (self.enteredText or ""), overX + overWidth*0.05, overY + overHeight * 0.32 , overWidth*0.9, "center")
 		
 		Font.SetSize(3)
-		love.graphics.printf("Loading from " .. (love.filesystem.getSaveDirectory() or "DIR_ERROR") .. "/levels", overX + overWidth*0.05, overY + overHeight * 0.65, overWidth*0.9, "center")
+		love.graphics.printf("Loading from " .. (self.dir or love.filesystem.getSaveDirectory() or "DIR_ERROR"), overX + overWidth*0.05, overY + overHeight * 0.65, overWidth*0.9, "center")
 
 	elseif self.saveLevelGetName then
 		Font.SetSize(0)
@@ -430,7 +429,7 @@ function api.Initialize(world, levelIndex, mapDataOverride)
 		world = world,
 	}
 	
-	self.dir = "F:/DevStuff/HG/HourglassII/data/levels/"
+	self.dir = "B:/Dev/HG/HourglassII/data/levels/"
 	SetupWorld()
 end
 

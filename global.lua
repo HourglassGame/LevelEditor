@@ -20,6 +20,7 @@ local globals = {
 	
 	DEFAULT_LEVEL = "7TimeBelt",
 	HG_GRID_SIZE = 3200,
+	FRAMES_PER_SECOND = 60,
 	
 	IGNORE_MOVE_ON_SELECT = false,
 	

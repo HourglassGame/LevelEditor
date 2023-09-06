@@ -47,8 +47,6 @@ function api.LoadPlatform(proto, platformID, triggers)
 		destroyed = (stateTrigger[5] == 1),
 	}
 	
-	util.PrintTable(data)
-	
 	return data
 end
 

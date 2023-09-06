@@ -8,7 +8,7 @@ local entity = {
 		self.yspeed = NewProp.numberBox(api, "Y Speed", self.yspeed or 0)
 		self.facing = NewProp.enumBox(api, "Facing", self.facing or "right", {"left", "right"})
 		
-		self.arrivalTime = NewProp.numberBox(api, "Arrival Time", self.arrivalTime or 0, 0, 60)
+		self.arrivalTime = NewProp.numberBox(api, "Arrival Time", self.arrivalTime or 0, 0, Global.FRAMES_PER_SECOND)
 		self.timeDirection = NewProp.timeDirection(api, self.timeDirection or "forwards")
 		self.timePaused = NewProp.boolBox(api, "Time Paused", self.timePaused)
 		-- Jump speed is technically configurable but we choose not to let the editor do it.
