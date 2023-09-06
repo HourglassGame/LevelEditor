@@ -19,11 +19,11 @@ local function PosSize(parent, pos, width, height, extras)
 	self.propList[#self.propList + 1] = self.propY
 	
 	if width then
-		self.propW = NewProp.numberBox(api, 'Width', width, 400)
+		self.propW = NewProp.numberBox(api, 'Width', width, Global.MIN_DIMENSION)
 		self.propList[#self.propList + 1] = self.propW
 	end
 	if height then
-		self.propH = NewProp.numberBox(api, 'Height', height, 400)
+		self.propH = NewProp.numberBox(api, 'Height', height, Global.MIN_DIMENSION)
 		self.propList[#self.propList + 1] = self.propH
 	end
 	
