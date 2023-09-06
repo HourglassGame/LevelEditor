@@ -83,7 +83,7 @@ local function PosSize(parent, pos, width, height, extras)
 	
 	function api.HandleWorldClick(pos, fromMouseMove)
 		local sizeSource = (self.readSizeFrom or api)
-		pos = ShopHandler.SnapToGrid(pos)
+		pos = ShopHandler.SnapToGrid(pos, sizeSource.GetWidth()*0.5, sizeSource.GetHeight()*0.5)
 		self.propX.Set(pos[1] - sizeSource.GetWidth()*0.5)
 		self.propY.Set(pos[2] - sizeSource.GetHeight()*0.5)
 	end

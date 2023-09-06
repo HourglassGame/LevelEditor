@@ -1,14 +1,19 @@
 
 local IterableMap = require("include/IterableMap")
 local util = require("include/util")
-local loadingUtilities = require("utilities/loadingUtilities")
 local Font = require("include/font")
+
+local platformUtilities = require("utilities/platformUtilities")
+local buttonUtilities = require("utilities/buttonUtilities")
 
 local self = {}
 local api = {}
 
-function api.SnapToGrid(pos)
-	return {math.floor(0.5 + pos[1] / self.placeGridSize.Get()) * self.placeGridSize.Get(), math.floor(0.5 + pos[2] / self.placeGridSize.Get()) * self.placeGridSize.Get()}
+function api.SnapToGrid(pos, xGridMax, yGridMax)
+	return {math.floor(
+		0.5 + pos[1] / math.min(xGridMax, self.placeGridSize.Get())) * math.min(xGridMax, self.placeGridSize.Get()),
+		math.floor(0.5 + pos[2] / math.min(yGridMax, self.placeGridSize.Get())) * math.min(yGridMax, self.placeGridSize.Get())
+	}
 end
 
 local function DoEntityClick(mousePos, button)
@@ -184,9 +189,20 @@ local function SetupMenu()
 	self.toggleWallMedium = NewProp.worldClickButton(api, "Wall Brush 2", ToggleWall, {1})
 	self.toggleWallLarge = NewProp.worldClickButton(api, "Wall Brush 3", ToggleWall, {2})
 	self.deleteEntity = NewProp.worldClickButton(api, "Delete Entities", DeleteEntity)
+	
 	self.boxSelector = NewProp.enumBox(api, "", "", {"box", "bomb", "balloon", "light"}, AddDefaultEntity, "New Box")
-	self.pickupSelector = NewProp.enumBox(api, "", "", Global.PICKUP_LIST, function (name) AddDefaultEntity("pickup", {pickupType = name}) end, "New Pickup")
-	self.platformSelector = NewProp.enumBox(api, "", "", {"elevator", "platform", "door"}, function (name) AddDefaultEntity("platform", loadingUtilities.GetDefaultPlatform(name)) end, "New Platform")
+	
+	self.pickupSelector = NewProp.enumBox(api, "", "", Global.PICKUP_LIST,
+		function (name) AddDefaultEntity("pickup", {pickupType = name}) end, "New Pickup")
+	
+	self.platformSelector = NewProp.enumBox(api, "", "", {"elevator", "platform", "door"},
+		function (name) AddDefaultEntity("platform", platformUtilities.GetDefaultPlatform(name)) end, "New Platform")
+	
+	self.buttonSelector = NewProp.enumBox(api, "", "", {"momentarySwitch", "stickySwitch"},
+		function (name)
+			local buttonType, buttonData = buttonUtilities.GetDefaultButton(name)
+			AddDefaultEntity(buttonType, buttonData)
+		end, "New Button")
 	
 	self.propList = {
 		self.levelWidth,
@@ -203,6 +219,7 @@ local function SetupMenu()
 		self.boxSelector,
 		self.pickupSelector,
 		self.platformSelector,
+		self.buttonSelector,
 	}
 end
 

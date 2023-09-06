@@ -50,7 +50,7 @@ function api.LoadPlatform(proto, platformID, triggers)
 	return data
 end
 
-function api.GetDefaultPlatform(platformType, addFunction)
+function api.GetDefaultPlatform(platformType)
 	if platformType == "elevator" then
 		local speed = {260, 260}
 		local accel = {30, 30}

@@ -1,7 +1,8 @@
 
 local IterableMap = require("include/IterableMap")
 local util = require("include/util")
-local loadingUtilities = require("utilities/loadingUtilities")
+local platformUtilities = require("utilities/platformUtilities")
+local buttonUtilities = require("utilities/buttonUtilities")
 
 local EntityDefs = util.LoadDefDirectory("defs/entities")
 local NewEntity = require("objects/entity")
@@ -32,7 +33,12 @@ end
 function api.LoadLevelItems(triggers, items)
 	for i = 1, #items.protoCollisions do
 		local proto = items.protoCollisions[i]
-		api.AddEntity("platform", loadingUtilities.LoadPlatform(proto, i, triggers))
+		api.AddEntity("platform", platformUtilities.LoadPlatform(proto, i, triggers))
+	end
+	for i = 1, #items.protoButtons do
+		local proto = items.protoButtons[i]
+		local buttonType, buttonData = buttonUtilities.LoadButton(proto, triggers)
+		api.AddEntity(buttonType, buttonData)
 	end
 	for i = 1, #items.protoMutators do
 		local proto = items.protoMutators[i]
