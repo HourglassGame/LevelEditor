@@ -20,7 +20,6 @@ end
 function api.LoadButton(proto, triggers)
 	local stateTrigger = triggers.triggerOffsetsAndDefaults[proto.triggerID]
 	
-	util.PrintTable(proto)
 	if proto.btsType == "momentarySwitch" or proto.btsType == "stickySwitch" then
 		local data = {
 			pos        = {proto.attachment.xOffset, proto.attachment.yOffset},
