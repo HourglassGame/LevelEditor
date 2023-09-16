@@ -10,6 +10,10 @@ local entity = {
 		self.winner           = NewProp.boolBox(api, "Win Portal", self.winner)
 		self.guyOnly          = NewProp.boolBox(api, "Player Only", self.guyOnly)
 		self.fallable         = NewProp.boolBox(api, "Fallable", self.fallable)
+		
+		-- Charges use a trigger internally, but don't need a named trigger in the editor. This just means that nothing made
+		-- with the editor can use the number of charges as a trigger input. Potentially change this when trigger clauses 
+		-- are added.
 		self.changes          = NewProp.numberBox(api, "Charges", self.changes or -1, -1, false, 1)
 		
 		self.destinationName   = NewProp.textBox(api, "Destination", self.destinationName or self.portalName.Get())
@@ -18,8 +22,8 @@ local entity = {
 		})
 		
 		self.timeDestination      = NewProp.numberBox(api, "Dest Time", self.timeDestination or 0, false, false, Global.FRAMES_PER_SECOND)
-		self.destinationDirection = NewProp.timeDirection(api, self.destinationDirection or "forwards", false, false, "Dest Direction")
 		self.relativeTime         = NewProp.boolBox(api, "Relative Time", self.relativeTime)
+		self.destinationDirection = NewProp.timeDirection(api, self.destinationDirection or "forwards", false, false, "Dest Direction")
 		self.relativeDirection    = NewProp.boolBox(api, "Relative Dir", self.relativeDirection)
 		
 		self.propList = {
@@ -39,8 +43,8 @@ local entity = {
 			self.destinationName,
 			self.destinationOffset,
 			self.timeDestination,
-			self.destinationDirection,
 			self.relativeTime,
+			self.destinationDirection,
 			self.relativeDirection,
 		}
 		self.defaultSelection = self.posSize.GetWorldClickProp()

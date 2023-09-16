@@ -4,6 +4,7 @@ local util = require("include/util")
 local Font = require("include/font")
 
 local platformUtilities = require("utilities/platformUtilities")
+local portalUtilities = require("utilities/portalUtilities")
 local buttonUtilities = require("utilities/buttonUtilities")
 
 local self = {}
@@ -197,6 +198,8 @@ local function SetupMenu()
 	
 	self.platformSelector = NewProp.enumBox(api, "", "", {"elevator", "platform", "door"},
 		function (name) AddDefaultEntity("platform", platformUtilities.GetDefaultPlatform(name)) end, "New Platform")
+	self.portalSelector = NewProp.enumBox(api, "", "", {"win", "zero", "reverse"},
+		function (name) AddDefaultEntity("portal", portalUtilities.GetDefaultPortal(name)) end, "New Portal")
 	
 	self.buttonSelector = NewProp.enumBox(api, "", "", {"momentarySwitch", "stickySwitch"},
 		function (name)
@@ -219,6 +222,7 @@ local function SetupMenu()
 		self.boxSelector,
 		self.pickupSelector,
 		self.platformSelector,
+		self.portalSelector,
 		self.buttonSelector,
 	}
 end
