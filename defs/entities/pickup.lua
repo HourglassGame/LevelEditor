@@ -19,7 +19,7 @@ local entity = {
 		self.timeDirection = NewProp.timeDirection(api, self.timeDirection or "forwards")
 		--self.attachment = 
 		self.pickupType = NewProp.enumBox(api, "Type", self.pickupType or "timeJump", Global.PICKUP_LIST)
-		self.pickupNumber = NewProp.numberBox(api, "Count", self.pickupNumber or 1, 1, 1)
+		self.pickupNumber = NewProp.numberBox(api, "Count", self.pickupNumber or 1, 1, false, 1)
 		self.triggerName = NewProp.textBox(api, "Trigger", self.triggerName or IndexNameHandler.GetNewTriggerName('pickup'))
 		
 		self.propList = {

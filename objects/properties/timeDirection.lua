@@ -1,7 +1,7 @@
 
-local function TimeDirection(parent, dir, imageF, imageR)
+local function TimeDirection(parent, dir, imageF, imageR, name)
 	local self = {
-		dir = NewProp.enumBox(api, "Time Direction", dir, {"forwards", "reverse"}),
+		dir = NewProp.enumBox(api, name or "Time Direction", dir, {"forwards", "reverse"}),
 		imageF = imageF,
 		imageR = imageR,
 	}

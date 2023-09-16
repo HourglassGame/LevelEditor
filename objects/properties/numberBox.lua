@@ -2,12 +2,13 @@
 local util = require("include/util")
 local Font = require("include/font")
 
-local function NumberBox(parent, name, value, minValue, divisor, applyFunc)
+local function NumberBox(parent, name, value, minValue, maxValue, divisor, applyFunc)
 	local self = {
 		name = name,
 		divisor = (divisor or Global.HG_GRID_SIZE),
 		value = (value or 0) / (divisor or Global.HG_GRID_SIZE),
 		minValue = minValue and minValue / (divisor or Global.HG_GRID_SIZE),
+		maxValue = maxValue and maxValue / (divisor or Global.HG_GRID_SIZE),
 	}
 	self.valueStr = tostring(self.value)
 	
@@ -17,6 +18,9 @@ local function NumberBox(parent, name, value, minValue, divisor, applyFunc)
 		newValue = newValue / self.divisor
 		if self.minValue and newValue < self.minValue then
 			newValue = self.minValue
+		end
+		if self.maxValue and newValue > self.maxValue then
+			newValue = self.maxValue
 		end
 		self.value = newValue
 		self.valueStr = tostring(self.value)
@@ -31,7 +35,7 @@ local function NumberBox(parent, name, value, minValue, divisor, applyFunc)
 	
 	local function UpdateValueFromStr()
 		local newVal = tonumber(self.valueStr)
-		if newVal and ((not self.minValue) or newVal >= self.minValue) then
+		if newVal and ((not self.minValue) or newVal >= self.minValue) and ((not self.maxValue) or newVal <= self.maxValue) then
 			self.value = newVal
 			if applyFunc then
 				applyFunc(self.value)

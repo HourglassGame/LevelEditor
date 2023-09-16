@@ -28,18 +28,18 @@ local function PosSize(parent, pos, width, height, extras)
 	end
 	
 	if extras and extras.speed then
-		self.xSpeed = NewProp.numberBox(api, 'X Speed', (type(extras.speed) == "table" and extras.speed[1]) or 0, 0, 1)
-		self.ySpeed = NewProp.numberBox(api, 'Y Speed', (type(extras.speed) == "table" and extras.speed[2]) or 0, 0, 1)
+		self.xSpeed = NewProp.numberBox(api, 'X Speed', (type(extras.speed) == "table" and extras.speed[1]) or 0, 0, false, 1)
+		self.ySpeed = NewProp.numberBox(api, 'Y Speed', (type(extras.speed) == "table" and extras.speed[2]) or 0, 0, false, 1)
 		self.propList[#self.propList + 1] = self.xSpeed
 		if not extras.accel then
 			self.propList[#self.propList + 1] = self.ySpeed
 		end
 	end
 	if extras and extras.accel then
-		self.xAccel = NewProp.numberBox(api, 'X Accel', (type(extras.accel) == "table" and extras.accel[1]) or 0, 0, 1)
-		self.xDecel = NewProp.numberBox(api, 'X Decel', (extras.decel and type(extras.decel) == "table" and extras.decel[1]) or 0, 0, 1)
-		self.yAccel = NewProp.numberBox(api, 'Y Accel', (type(extras.accel) == "table" and extras.accel[2]) or 0, 0, 1)
-		self.yDecel = NewProp.numberBox(api, 'Y Decel', (extras.decel and type(extras.decel) == "table" and extras.decel[2]) or 0, 0, 1)
+		self.xAccel = NewProp.numberBox(api, 'X Accel', (type(extras.accel) == "table" and extras.accel[1]) or 0, 0, false, 1)
+		self.xDecel = NewProp.numberBox(api, 'X Decel', (extras.decel and type(extras.decel) == "table" and extras.decel[1]) or 0, 0, false, 1)
+		self.yAccel = NewProp.numberBox(api, 'Y Accel', (type(extras.accel) == "table" and extras.accel[2]) or 0, 0, false, 1)
+		self.yDecel = NewProp.numberBox(api, 'Y Decel', (extras.decel and type(extras.decel) == "table" and extras.decel[2]) or 0, 0, false, 1)
 		
 		self.propList[#self.propList + 1] = self.xAccel
 		self.propList[#self.propList + 1] = self.xDecel

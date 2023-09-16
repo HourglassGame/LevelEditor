@@ -179,12 +179,12 @@ local function SetupMenu()
 		EntityHandler.AddEntity(name, data)
 	end
 
-	self.levelWidth = NewProp.numberBox(api, "Level Width", LevelHandler.Width(), 1, 1, SetWidth)
-	self.levelHeight = NewProp.numberBox(api, "Level Height",LevelHandler.Height(), 1, 1, SetHeight)
-	self.timeLength = NewProp.numberBox(api, "Time Length (s)", LevelHandler.GetTimeLength(), 60, Global.FRAMES_PER_SECOND, SetTimeLength)
-	self.timeSpeed = NewProp.numberBox(api, "Time Speed (s/s)", LevelHandler.GetTimeSpeed(), 1, 1, SetTimeSpeed)
+	self.levelWidth = NewProp.numberBox(api, "Level Width", LevelHandler.Width(), 1, false, 1, SetWidth)
+	self.levelHeight = NewProp.numberBox(api, "Level Height",LevelHandler.Height(), 1, false, 1, SetHeight)
+	self.timeLength = NewProp.numberBox(api, "Time Length (s)", LevelHandler.GetTimeLength(), 60, false, Global.FRAMES_PER_SECOND, SetTimeLength)
+	self.timeSpeed = NewProp.numberBox(api, "Time Speed (s/s)", LevelHandler.GetTimeSpeed(), 1, false, 1, SetTimeSpeed)
 	
-	self.placeGridSize = NewProp.numberBox(api, "Place Grid Snap", 800, 100, 100)
+	self.placeGridSize = NewProp.numberBox(api, "Place Grid Snap", 800, 100, 3200, 100)
 	self.toggleWallSmall = NewProp.worldClickButton(api, "Wall Brush 1", ToggleWall, {0})
 	self.toggleWallMedium = NewProp.worldClickButton(api, "Wall Brush 2", ToggleWall, {1})
 	self.toggleWallLarge = NewProp.worldClickButton(api, "Wall Brush 3", ToggleWall, {2})

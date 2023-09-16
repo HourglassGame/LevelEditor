@@ -49,6 +49,14 @@ function api.GetOrMakePlatformName(platformID, prefix)
 	return GetOrMakeName(self.platformData, platformID, prefix)
 end
 
+function api.GetNewPortalName(prefix)
+	return GetNewName(self.portalData, prefix)
+end
+
+function api.GetOrMakePortalName(portalID, prefix)
+	return GetOrMakeName(self.portalData, portalID, prefix)
+end
+
 function api.Update(dt)
 end
 
@@ -58,10 +66,10 @@ end
 function api.Initialize(world, levelIndex, mapDataOverride)
 	self = {
 		world = world,
-		platformData = InitIndexData("platform"),
 		triggerData = InitIndexData("trigger"),
+		platformData = InitIndexData("platform"),
+		portalData = InitIndexData("portal"),
 	}
-	
 end
 
 return api

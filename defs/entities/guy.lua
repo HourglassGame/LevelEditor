@@ -8,7 +8,7 @@ local entity = {
 		self.yspeed = NewProp.numberBox(api, "Y Speed", self.yspeed or 0)
 		self.facing = NewProp.enumBox(api, "Facing", self.facing or "right", {"left", "right"})
 		
-		self.arrivalTime = NewProp.numberBox(api, "Arrival Time", self.arrivalTime or 0, 0, Global.FRAMES_PER_SECOND)
+		self.arrivalTime = NewProp.numberBox(api, "Arrival Time", self.arrivalTime or 0, 0, false, Global.FRAMES_PER_SECOND)
 		self.timeDirection = NewProp.timeDirection(api, self.timeDirection or "forwards")
 		self.timePaused = NewProp.boolBox(api, "Time Paused", self.timePaused)
 		-- Jump speed is technically configurable but we choose not to let the editor do it.
@@ -39,7 +39,7 @@ local entity = {
 		self.pickups = self.pickups or {}
 		for i = 1, #Global.PICKUP_LIST do
 			local pickup = Global.PICKUP_LIST[i]
-			self.pickups[pickup] = NewProp.numberBox(api, pickup, self.pickups[pickup] or 0, 0, 1)
+			self.pickups[pickup] = NewProp.numberBox(api, pickup, self.pickups[pickup] or 0, 0, false, 1)
 			self.propList[#self.propList + 1] = self.pickups[pickup]
 		end
 		

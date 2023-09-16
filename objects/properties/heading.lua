@@ -4,7 +4,7 @@ local Font = require("include/font")
 
 local function Heading(parent, name)
 	local self = {
-		name = name,
+		name = name or "",
 	}
 	
 	local api = {}
