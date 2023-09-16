@@ -27,7 +27,8 @@ local function DoEntityClick(mousePos, button)
 			-- Stop entities repositioning when clicking on them followed by an accidental mouse movement.
 			self.ignoreMouseMove = true
 		end
-		self.selectedItem = self.hoveredItem
+		self.selectedItem     = self.hoveredItem
+		self.selectedOffset   = util.Subtract(LevelHandler.WorldToHg(mousePos), self.selectedItem.GetPosition())
 		self.selectedProperty = self.selectedItem.GetDefaultSelectedProperty()
 		self.selectedProperty.SetSelected(true)
 		return true
@@ -54,7 +55,7 @@ local function DoPropertyClick(mousePos, button, mouseMove)
 		return true
 	elseif self.selectedProperty and button == 1 and mousePos[1] < Global.VIEW_WIDTH + Global.MAIN_PADDING then
 		if self.selectedProperty.HandleWorldClick then
-			self.selectedProperty.HandleWorldClick(LevelHandler.WorldToHg(mousePos), mouseMove)
+			self.selectedProperty.HandleWorldClick(LevelHandler.WorldToHg(mousePos), mouseMove, self.selectedOffset)
 			return true
 		end
 	elseif self.selectedProperty and button == 2 then
@@ -156,7 +157,7 @@ local function SetupMenu()
 	local function SetTimeSpeed(newVal)
 		LevelHandler.SetLevelParameter("timeSpeed", newVal)
 	end
-	local function ToggleWall(pos, fromMouseMove, size)
+	local function ToggleWall(pos, fromMouseMove, offset, size)
 		if not fromMouseMove then
 			self.wallAddMode = not LevelHandler.WallAt(pos)
 		end

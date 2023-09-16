@@ -73,6 +73,10 @@ local function PosSize(parent, pos, width, height, extras)
 		self.propH.Set(newHeight)
 	end
 	
+	function api.GetPosition()
+		return {self.propX.Get(), self.propY.Get()}
+	end
+	
 	function api.GetWidth()
 		return self.propW.Get()
 	end
@@ -81,11 +85,13 @@ local function PosSize(parent, pos, width, height, extras)
 		return self.propH.Get()
 	end
 	
-	function api.HandleWorldClick(pos, fromMouseMove)
+	function api.HandleWorldClick(pos, fromMouseMove, selectedOffset)
 		local sizeSource = (self.readSizeFrom or api)
+		pos[1] = pos[1] - (selectedOffset and selectedOffset[1] or sizeSource.GetWidth()*0.5)
+		pos[2] = pos[2] - (selectedOffset and selectedOffset[2] or sizeSource.GetHeight()*0.5)
 		pos = ShopHandler.SnapToGrid(pos, sizeSource.GetWidth()*0.5, sizeSource.GetHeight()*0.5)
-		self.propX.Set(pos[1] - sizeSource.GetWidth()*0.5)
-		self.propY.Set(pos[2] - sizeSource.GetHeight()*0.5)
+		self.propX.Set(pos[1])
+		self.propY.Set(pos[2])
 	end
 	
 	function api.HitTest(pos)

@@ -19,6 +19,8 @@ function api.GetDrawScale()
 end
 
 function api.HgToWorld(var)
+	-- Transforms from HG scale, ie level scale, to the Love world scale. Use this
+	-- for drawing and UI transforms.
 	local scale = (self.level.segmentSize * self.drawScale) / Global.HG_GRID_SIZE
 	if type(var) == "table" then
 		return util.Mult(scale, var)

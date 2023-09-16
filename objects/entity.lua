@@ -22,6 +22,10 @@ local function NewEntity(self, def)
 		end
 	end
 	
+	function api.GetPosition()
+		return self.posSize.GetPosition()
+	end
+	
 	function api.DeleteIfHit(pos)
 		if (not def.undeletable) and self.posSize.HitTest(pos) then
 			return true

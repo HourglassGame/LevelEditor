@@ -10,16 +10,16 @@ local function WorldClickButton(parent, name, applyFunc, extraArgs)
 	local api = {
 	}
 	
-	function api.HandleWorldClick(pos, fromMouseMove)
+	function api.HandleWorldClick(pos, fromMouseMove, selectedOffset)
 		if applyFunc then
 			if extraArgs then
-				applyFunc(pos, fromMouseMove, unpack(extraArgs))
+				applyFunc(pos, fromMouseMove, selectedOffset, unpack(extraArgs))
 			else
-				applyFunc(pos, fromMouseMove)
+				applyFunc(pos, fromMouseMove, selectedOffset)
 			end
 			return
 		end
-		parent.HandleWorldClick(pos, fromMouseMove)
+		parent.HandleWorldClick(pos, fromMouseMove, selectedOffset)
 	end
 	
 	function api.SetSelected(newState)
