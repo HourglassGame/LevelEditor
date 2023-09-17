@@ -271,9 +271,19 @@ end
 end
 
 function api.SaveLevel(name)
+	local mainStr = ""
+	local triggerSystemStr = ""
+	local level = self.level
+	
+	mainStr = mainStr .. [[
+name = "]] .. level.name .. [["
+speedOfTime = ]] .. tostring(level.timeSpeed) .. "\n" .. [[
+timelineLength = ]] ..tostring(level.timeLength) .. "\n" .. [[
+]]
 	
 	love.filesystem.createDirectory("levels/" .. name .. ".lvl")
-	love.filesystem.write("levels/" ..name .. ".lvl/triggerSystem.lua", "bla")
+	love.filesystem.write("levels/" ..name .. ".lvl/main.lua", mainStr)
+	love.filesystem.write("levels/" ..name .. ".lvl/triggerSystem.lua", triggerSystemStr)
 	
 	return true
 end

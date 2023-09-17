@@ -25,7 +25,7 @@ local function NumberBox(parent, name, value, minValue, maxValue, divisor, apply
 		self.value = newValue
 		self.valueStr = tostring(self.value)
 		if applyFunc then
-			applyFunc(self.value)
+			applyFunc(self.value * self.divisor)
 		end
 	end
 	
