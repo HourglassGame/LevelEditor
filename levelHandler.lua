@@ -38,6 +38,8 @@ end
 
 local function InitialiseNewLevel()
 	self.level.wall = {}
+	self.level.name = ""
+	self.level.fileName = Global.DEFAULT_LEVEL
 	self.level.width = 32
 	self.level.height = 19
 	self.level.segmentSize = 3200
@@ -50,7 +52,7 @@ local function InitialiseNewLevel()
 	ShopHandler.UpdateLevelParams(self.level)
 end
 
-local function SetupWorld(levelData)
+local function SetupWorld(levelData, fileName)
 	self.level = {}
 	ShopHandler.ResetState()
 	EntityHandler.DeleteAll()
@@ -59,6 +61,9 @@ local function SetupWorld(levelData)
 		InitialiseNewLevel()
 		return
 	end
+	
+	self.level.name = levelData.name
+	self.level.fileName = fileName .. Global.DEFAULT_LEVEL_SAVE_SUFFIX
 	
 	-- Setup wall
 	local dataWall = levelData.environment.wall
@@ -198,6 +203,15 @@ end
 
 function api.LoadLevel(name)
 	print("Load level main.lua")
+	if not love.filesystem.getInfo("levels/" .. name .. ".lvl/main.lua") then
+		print("levels/" .. name .. ".lvl/main.lua not found")
+		return
+	end
+	if not love.filesystem.getInfo("levels/" .. name .. ".lvl/triggerSystem.lua") then
+		print("levels/" .. name .. ".lvl/triggerSystem.lua not found")
+		return
+	end
+	
 	local levelStr = "return function()\n"
 	for line in love.filesystem.lines("levels/" .. name .. ".lvl/main.lua") do
 		local first = string.sub(line, 0, 1)
@@ -252,12 +266,12 @@ end
 		return
 	end
 	
-	SetupWorld(levelData)
+	SetupWorld(levelData, name)
 	return true
 end
 
 function api.SaveLevel(name)
-	name = name .. "_test"
+	
 	love.filesystem.createDirectory("levels/" .. name .. ".lvl")
 	love.filesystem.write("levels/" ..name .. ".lvl/triggerSystem.lua", "bla")
 	
@@ -309,58 +323,6 @@ function api.TownWantPopup(pos)
 end
 
 function api.KeyPressed(key, scancode, isRepeat)
-	self.enteredText = self.enteredText or Global.DEFAULT_LEVEL
-	
-	if self.loadingLevelGetName or self.saveLevelGetName then
-		if key and string.len(key) == 1 then
-			if (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
-				key = string.upper(key)
-			end
-			self.enteredText = (self.enteredText or "") .. key
-		end
-		if key == "meta" or key == "space" then
-			self.enteredText = (self.enteredText or "") .. " "
-		end
-		if (key == "delete" or key == "backspace") and self.enteredText and string.len(self.enteredText) > 0 then
-			self.enteredText = string.sub(self.enteredText, 0, string.len(self.enteredText) - 1)
-		end
-		if key == "escape" then
-			self.loadingLevelGetName = false
-			self.saveLevelGetName = false
-		end
-		if key == "return" and self.enteredText then
-			if self.loadingLevelGetName then
-				if api.LoadLevel(self.enteredText) then
-					self.loadingLevelGetName = false
-				end
-			elseif self.saveLevelGetName then
-				if api.SaveLevel(self.enteredText) then
-					self.saveLevelGetName = false
-				end
-			end
-		end
-		return true
-	end
-	
-	if self.townWantConf then
-		
-		return true
-	end
-	
-	if key == "l" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
-		self.loadingLevelGetName = true
-	end
-	if key == "k" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
-		self.saveLevelGetName = true
-	end
-	if key == "j" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
-		self.editMode = not self.editMode
-	end
-	
-	local level = self.level
-	if not level then
-		return
-	end
 end
 
 function api.Draw(drawQueue)
@@ -384,49 +346,6 @@ function api.Draw(drawQueue)
 end
 
 function api.DrawInterface()
-	local gameOver, gameWon, gameLost = self.world.GetGameOver()
-	local windowX, windowY = love.window.getMode()
-	local overX = windowX*0.25
-	local overWidth = windowX*0.5
-	local overY = windowY*0.25
-	local overHeight = windowY*0.5
-	
-	local drawWindow = self.loadingLevelGetName or self.saveLevelGetName or self.townWantConf
-	if drawWindow then
-		love.graphics.setColor(Global.PANEL_COL[1], Global.PANEL_COL[2], Global.PANEL_COL[3], 0.97)
-		love.graphics.setLineWidth(4)
-		love.graphics.rectangle("fill", overX, overY, overWidth, overHeight, 8, 8, 16)
-		love.graphics.setColor(0, 0, 0, 0.8)
-		love.graphics.setLineWidth(10)
-		love.graphics.rectangle("line", overX, overY, overWidth, overHeight, 8, 8, 16)
-		
-	end
-	
-	if self.townWantConf then
-		
-	elseif self.loadingLevelGetName then
-		Font.SetSize(0)
-		love.graphics.setColor(0, 0, 0, 0.8)
-		love.graphics.printf("Loading Level", overX, overY + overHeight * 0.04, overWidth, "center")
-		
-		Font.SetSize(3)
-		love.graphics.printf("Type level name (Enter accept, ESC cancel)\n" .. (self.enteredText or ""), overX + overWidth*0.05, overY + overHeight * 0.32 , overWidth*0.9, "center")
-		
-		Font.SetSize(3)
-		love.graphics.printf("Loading from " .. (love.filesystem.getSaveDirectory() or "DIR_ERROR"), overX + overWidth*0.05, overY + overHeight * 0.65, overWidth*0.9, "center")
-
-	elseif self.saveLevelGetName then
-		Font.SetSize(0)
-		love.graphics.setColor(0, 0, 0, 0.8)
-		love.graphics.printf("Saving Level", overX, overY + overHeight * 0.04, overWidth, "center")
-		
-		Font.SetSize(3)
-		love.graphics.printf("Type level name (Enter accept, ESC cancel)\n" .. (self.enteredText or ""), overX + overWidth*0.05, overY + overHeight * 0.32 , overWidth*0.9, "center")
-		
-		Font.SetSize(3)
-		love.graphics.printf("Saving to " .. (love.filesystem.getSaveDirectory() or "DIR_ERROR") .. "/levels", overX + overWidth*0.05, overY + overHeight * 0.65, overWidth*0.9, "center")
-	end
-	return drawWindow
 end
 
 function api.Initialize(world, levelIndex, mapDataOverride)

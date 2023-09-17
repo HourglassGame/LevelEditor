@@ -24,6 +24,9 @@ local function TextBox(parent, name, value, applyFunc)
 	end
 	
 	function api.HandleKeyPress(key)
+		if key == "lshift" or key == "rshift" or key == "lctrl" or key == "rctrl" or key == "lalt" or key == "ralt" then
+			return
+		end
 		if key == "backspace" or key == "delete" then
 			if string.len(self.editedValue) > 0 then
 				self.editedValue = string.sub(self.editedValue, 0, string.len(self.editedValue) - 1)
@@ -34,6 +37,9 @@ local function TextBox(parent, name, value, applyFunc)
 			return
 		end
 		key = string.gsub(key, "kp", "")
+		if (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
+			key = string.upper(key)
+		end
 		self.editedValue = self.editedValue .. key
 	end
 	

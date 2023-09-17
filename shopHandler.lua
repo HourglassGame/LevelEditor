@@ -10,6 +10,13 @@ local buttonUtilities = require("utilities/buttonUtilities")
 local self = {}
 local api = {}
 
+local function SaveLevel()
+	LevelHandler.SaveLevel(self.levelFile.Get())
+end
+local function LoadLevel()
+	LevelHandler.LoadLevel(self.levelFile.Get())
+end
+
 function api.SnapToGrid(pos, xGridMax, yGridMax)
 	return {math.floor(
 		0.5 + pos[1] / math.min(xGridMax, self.placeGridSize.Get())) * math.min(xGridMax, self.placeGridSize.Get()),
@@ -105,6 +112,13 @@ function api.KeyPressed(key, scancode, isRepeat)
 	if DoPropertyKeyPress(key, scancode, isRepeat) then
 		return true
 	end
+	
+	if key == "l" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
+		LoadLevel()
+	end
+	if key == "s" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
+		SaveLevel()
+	end
 end
 
 local function DrawEntityProperties(drawQueue, propList, mousePos)
@@ -138,6 +152,8 @@ function api.Draw(drawQueue)
 end
 
 function api.UpdateLevelParams(level)
+	self.levelName.Set(level.name)
+	self.levelFile.Set(level.fileName)
 	self.levelWidth.Set(level.width)
 	self.levelHeight.Set(level.height)
 	self.timeLength.Set(level.timeLength)
@@ -181,16 +197,22 @@ local function SetupMenu()
 		EntityHandler.AddEntity(name, data)
 	end
 
-	self.levelWidth = NewProp.numberBox(api, "Level Width", LevelHandler.Width(), 1, false, 1, SetWidth)
-	self.levelHeight = NewProp.numberBox(api, "Level Height",LevelHandler.Height(), 1, false, 1, SetHeight)
-	self.timeLength = NewProp.numberBox(api, "Time Length (s)", LevelHandler.GetTimeLength(), 60, false, Global.FRAMES_PER_SECOND, SetTimeLength)
-	self.timeSpeed = NewProp.numberBox(api, "Time Speed (s/s)", LevelHandler.GetTimeSpeed(), 1, false, 1, SetTimeSpeed)
+	self.levelName = NewProp.textBox(api, "Level Name", "")
+	self.levelFile = NewProp.textBox(api, "Level File", "")
+	self.saveButton = NewProp.clickButton(api, "Save (ctrl+S)", SaveLevel)
+	self.loadButton = NewProp.clickButton(api, "Load (ctrl+L)", LoadLevel)
+	self.levelPath = NewProp.heading(api, love.filesystem.getSaveDirectory() .. "/levels", 2)
 	
-	self.placeGridSize = NewProp.numberBox(api, "Place Grid Snap", 800, 100, 3200, 100)
-	self.toggleWallSmall = NewProp.worldClickButton(api, "Wall Brush 1", ToggleWall, {0})
+	self.levelWidth  = NewProp.numberBox(api, "Level Width", LevelHandler.Width(), 1, false, 1, SetWidth)
+	self.levelHeight = NewProp.numberBox(api, "Level Height",LevelHandler.Height(), 1, false, 1, SetHeight)
+	self.timeLength  = NewProp.numberBox(api, "Time Length (s)", LevelHandler.GetTimeLength(), 60, false, Global.FRAMES_PER_SECOND, SetTimeLength)
+	self.timeSpeed   = NewProp.numberBox(api, "Time Speed (s/s)", LevelHandler.GetTimeSpeed(), 1, false, 1, SetTimeSpeed)
+	
+	self.placeGridSize    = NewProp.numberBox(api, "Place Grid Snap", 800, 100, 3200, 100)
+	self.toggleWallSmall  = NewProp.worldClickButton(api, "Wall Brush 1", ToggleWall, {0})
 	self.toggleWallMedium = NewProp.worldClickButton(api, "Wall Brush 2", ToggleWall, {1})
-	self.toggleWallLarge = NewProp.worldClickButton(api, "Wall Brush 3", ToggleWall, {2})
-	self.deleteEntity = NewProp.worldClickButton(api, "Delete Entities", DeleteEntity)
+	self.toggleWallLarge  = NewProp.worldClickButton(api, "Wall Brush 3", ToggleWall, {2})
+	self.deleteEntity     = NewProp.worldClickButton(api, "Delete Entities", DeleteEntity)
 	
 	self.boxSelector = NewProp.enumBox(api, "", "", {"box", "bomb", "balloon", "light"}, AddDefaultEntity, "New Box")
 	
@@ -209,16 +231,24 @@ local function SetupMenu()
 		end, "New Button")
 	
 	self.propList = {
+		self.levelName,
+		self.levelFile,
+		self.saveButton,
+		self.loadButton,
+		self.levelPath,
+		
 		self.levelWidth,
 		self.levelHeight,
 		self.timeLength,
 		self.timeSpeed,
+		
 		NewProp.heading(api, ""),
 		self.placeGridSize,
 		self.toggleWallSmall,
 		self.toggleWallMedium,
 		self.toggleWallLarge,
 		self.deleteEntity,
+		
 		NewProp.heading(api, ""),
 		self.boxSelector,
 		self.pickupSelector,
