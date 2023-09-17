@@ -196,10 +196,10 @@ function api.GetMapData()
 	return self.map
 end
 
-function api.LoadLevel(dir, name)
+function api.LoadLevel(name)
 	print("Load level main.lua")
 	local levelStr = "return function()\n"
-	for line in io.lines(dir .. name .. ".lvl/main.lua") do
+	for line in love.filesystem.lines("levels/" .. name .. ".lvl/main.lua") do
 		local first = string.sub(line, 0, 1)
 		if first ~= "{" and first ~= "}" and first ~= [[	]] and first ~= " " and string.len(first) > 0 then
 			line = "local " .. line
@@ -227,7 +227,7 @@ end
 	print("Load level triggerSystem.lua")
 	local trigStr = "return "
 	local writeActive = false
-	for line in io.lines(dir .. name .. ".lvl/triggerSystem.lua") do
+	for line in love.filesystem.lines("levels/" .. name .. ".lvl/triggerSystem.lua") do
 		if string.find(line, "local tempStore =") then
 			writeActive = true
 		elseif writeActive then
@@ -257,8 +257,11 @@ end
 end
 
 function api.SaveLevel(name)
+	name = name .. "_test"
+	love.filesystem.createDirectory("levels/" .. name .. ".lvl")
+	love.filesystem.write("levels/" ..name .. ".lvl/triggerSystem.lua", "bla")
 	
-	return success
+	return true
 end
 
 function api.HgToGrid(pos)
@@ -327,7 +330,7 @@ function api.KeyPressed(key, scancode, isRepeat)
 		end
 		if key == "return" and self.enteredText then
 			if self.loadingLevelGetName then
-				if api.LoadLevel(self.dir, self.enteredText) then
+				if api.LoadLevel(self.enteredText) then
 					self.loadingLevelGetName = false
 				end
 			elseif self.saveLevelGetName then
@@ -410,7 +413,7 @@ function api.DrawInterface()
 		love.graphics.printf("Type level name (Enter accept, ESC cancel)\n" .. (self.enteredText or ""), overX + overWidth*0.05, overY + overHeight * 0.32 , overWidth*0.9, "center")
 		
 		Font.SetSize(3)
-		love.graphics.printf("Loading from " .. (self.dir or love.filesystem.getSaveDirectory() or "DIR_ERROR"), overX + overWidth*0.05, overY + overHeight * 0.65, overWidth*0.9, "center")
+		love.graphics.printf("Loading from " .. (love.filesystem.getSaveDirectory() or "DIR_ERROR"), overX + overWidth*0.05, overY + overHeight * 0.65, overWidth*0.9, "center")
 
 	elseif self.saveLevelGetName then
 		Font.SetSize(0)
@@ -431,7 +434,6 @@ function api.Initialize(world, levelIndex, mapDataOverride)
 		world = world,
 	}
 	
-	self.dir = "B:/Dev/HG/HourglassII/data/levels/"
 	SetupWorld()
 end
 
