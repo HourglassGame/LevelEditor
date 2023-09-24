@@ -2,6 +2,7 @@
 local IterableMap = require("include/IterableMap")
 local util = require("include/util")
 local Font = require("include/font")
+local SaveUtils = require("utilities/saveUtilities")
 
 local MapDefs = util.LoadDefDirectory("defs/maps")
 
@@ -74,6 +75,8 @@ local function SetupWorld(levelData, fileName)
 			grid[j - 1][i - 1] = dataWall[i][j]
 		end
 	end
+	self.level.gravity = levelData.environment.gravity
+	self.level.segmentSize = levelData.environment.segmentSize
 	self.level.wall = grid
 	self.level.width = dataWall.width
 	self.level.height = dataWall.height
@@ -270,16 +273,22 @@ end
 	return true
 end
 
+
 function api.SaveLevel(name)
 	local mainStr = ""
 	local triggerSystemStr = ""
 	local level = self.level
 	
 	mainStr = mainStr .. [[
-name = "]] .. level.name .. [["
-speedOfTime = ]] .. tostring(level.timeSpeed) .. "\n" .. [[
-timelineLength = ]] ..tostring(level.timeLength) .. "\n" .. [[
+name = "_LEVEL_NAME_"
+speedOfTime = _SPEED_OF_TIME_
+timelineLength = _TIME_LENGTH_
+environment =_ENVIRONMENT_
 ]]
+	mainStr = string.gsub(mainStr, "_LEVEL_NAME_", level.name)
+	mainStr = string.gsub(mainStr, "_SPEED_OF_TIME_", tostring(level.timeSpeed))
+	mainStr = string.gsub(mainStr, "_TIME_LENGTH_", tostring(level.timeLength))
+	mainStr = string.gsub(mainStr, "_ENVIRONMENT_", tostring(SaveUtils.SaveEnvToLevelString(self.level)))
 	
 	love.filesystem.createDirectory("levels/" .. name .. ".lvl")
 	love.filesystem.write("levels/" ..name .. ".lvl/main.lua", mainStr)
